@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌌 Музыкальная Вселенная</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            overflow: hidden;
+            background: #000;
+            color: #fff;
+        }
+
+        #canvas {
+            display: block;
+            width: 100%;
+            height: 100vh;
+        }
+
+        .ui-panel {
+            position: absolute;
+            background: rgba(0, 10, 30, 0.85);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(100, 150, 255, 0.3);
+            border-radius: 8px;
+            padding: 15px;
+            color: #fff;
+            font-size: 13px;
+        }
+
+        #controls {
+            top: 20px;
+            left: 20px;
+            width: 300px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        #info {
+            top: 20px;
+            right: 20px;
+            width: 320px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        #spectrum {
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 600px;
+            height: 120px;
+            padding: 10px;
+        }
+
+        #minimap {
+            bottom: 20px;
+            right: 20px;
+            width: 200px;
+            height: 200px;
+            border: 2px solid rgba(100, 150, 255, 0.5);
+        }
+
+        h3 {
+            margin: 0 0 10px 0;
+            color: #6af;
+            font-size: 16px;
+            border-bottom: 1px solid rgba(100, 150, 255, 0.3);
+            padding-bottom: 5px;
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px 5px 5px 0;
+            font-size: 12px;
+            transition: transform 0.2s;
+        }
+
+        button:hover {
+            transform: scale(1.05);
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+
+        input[type="range"] {
+            width: 100%;
+            margin: 5px 0;
+        }
+
+        select, input[type="file"] {
+            width: 100%;
+            padding: 6px;
+            margin: 5px 0;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(100, 150, 255, 0.3);
+            border-radius: 4px;
+            color: white;
+        }
+
+        .stat-line {
+            display: flex;
+            justify-content: space-between;
+            margin: 5px 0;
+            padding: 5px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 3px;
+        }
+
+        .stat-label {
+            color: #6af;
+        }
+
+        canvas {
+            cursor: grab;
+        }
+
+        canvas:active {
+            cursor: grabbing;
+        }
+
+        #spectrumCanvas {
+            width: 100%;
+            height: 100px;
+        }
+
+        #minimapCanvas {
+            width: 100%;
+            height: 100%;
+        }
+
+        .control-group {
+            margin: 15px 0;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 5px;
+        }
+
+        .achievement {
+            background: linear-gradient(90deg, rgba(255, 215, 0, 0.2), transparent);
+            border-left: 3px solid gold;
+            padding: 8px;
+            margin: 5px 0;
+            border-radius: 3px;
+            font-size: 11px;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(100, 150, 255, 0.5);
+            border-radius: 4px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        #loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 24px;
+            text-align: center;
+        }
+
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-top: 4px solid #6af;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    
+    <div id="loading">
+        <div class="spinner"></div>
+        <div>Генерация вселенной...</div>
+    </div>
+
+    <div id="controls" class="ui-panel">
+        <h3>🎮 Управление</h3>
+        
+        <div class="control-group">
+            <strong>🎵 Аудио</strong>
+            <input type="file" id="audioFile" accept="audio/*">
+            <button onclick="startMicrophone()">🎤 Микрофон</button>
+            <button onclick="generateAmbient()">🌊 Ambient AI</button>
+            <button onclick="toggleAudio()">⏯ Пауза</button>
+        </div>
+
+        <div class="control-group">
+            <strong>📷 Режим камеры</strong>
+            <select id="cameraMode" onchange="changeCameraMode(this.value)">
+                <option value="free">Свободный полет</option>
+                <option value="orbit">Орбитальная съемка</option>
+                <option value="cinematic">Кинематографический</option>
+                <option value="galaxy">Галактический обзор</option>
+            </select>
+        </div>
+
+        <div class="control-group">
+            <strong>🎨 Музыкальный режим</strong>
+            <select id="musicMode" onchange="changeMusicMode(this.value)">
+                <option value="normal">Обычный</option>
+                <option value="symphonic">Симфонический</option>
+                <option value="electronic">Электронный</option>
+                <option value="ambient">Эмбиент</option>
+                <option value="rock">Рок/Метал</option>
+                <option value="jazz">Джаз</option>
+            </select>
+        </div>
+
+        <div class="control-group">
+            <strong>⏱ Скорость времени: <span id="timeSpeed">1.0</span>x</strong>
+            <input type="range" id="timeSlider" min="-10" max="30" value="0" step="1" oninput="changeTimeSpeed(this.value)">
+        </div>
+
+        <div class="control-group">
+            <strong>🎯 FFT разрешение</strong>
+            <select id="fftSize" onchange="changeFFTSize(this.value)">
+                <option value="512">512</option>
+                <option value="1024" selected>1024</option>
+                <option value="2048">2048</option>
+            </select>
+        </div>
+
+        <div class="control-group">
+            <button onclick="generateNewSystem()">🔄 Новая система</button>
+            <button onclick="hyperJump()">⚡ Гиперпрыжок</button>
+            <button onclick="saveBookmark()">⭐ Сохранить</button>
+            <button onclick="screenshot()">📸 Скриншот</button>
+            <button onclick="toggleUI()">👁 Скрыть UI</button>
+        </div>
+
+        <div class="control-group">
+            <strong>📊 Статистика</strong>
+            <div class="stat-line">
+                <span class="stat-label">Систем:</span>
+                <span id="systemsVisited">0</span>
+            </div>
+            <div class="stat-line">
+                <span class="stat-label">Планет:</span>
+                <span id="planetsFound">0</span>
+            </div>
+            <div class="stat-line">
+                <span class="stat-label">Расстояние:</span>
+                <span id="distanceTraveled">0 пк</span>
+            </div>
+        </div>
+    </div>
+
+    <div id="info" class="ui-panel">
+        <h3 id="objectName">🌟 Выберите объект</h3>
+        <div id="objectInfo">
+            <p style="color: #888;">Кликните на звезду или планету для получения информации</p>
+            <br>
+            <p><strong>Управление:</strong></p>
+            <p>🖱 ЛКМ + Drag - вращение</p>
+            <p>🖱 Колесо - приближение</p>
+            <p>🖱 Клик - выбор объекта</p>
+            <p>⌨ WASD - движение</p>
+            <p>⌨ Shift - ускорение</p>
+            <p>⌨ Space - пауза</p>
+            <p>⌨ Tab - режим камеры</p>
+        </div>
+    </div>
+
+    <div id="spectrum" class="ui-panel">
+        <canvas id="spectrumCanvas"></canvas>
+    </div>
+
+    <div id="minimap" class="ui-panel">
+        <canvas id="minimapCanvas"></canvas>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        // === ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ===
+        let scene, camera, renderer, audioContext, analyser, dataArray;
+        let stars = [], planets = [], selectedObject = null;
+        let cameraMode = 'free', musicMode = 'normal';
+        let timeScale = 1.0, stats = {systems: 0, planets: 0, distance: 0};
+        let clock = new THREE.Clock();
+        let audioSource = null, isAudioPlaying = false;
+        let mouseDown = false, mouseX = 0, mouseY = 0;
+        let cameraRotation = {x: 0, y: 0};
+        let cameraPosition = new THREE.Vector3(0, 50, 150);
+        let keys = {};
+        let currentSeed = Math.random().toString(36).substr(2, 9);
+        let nebulae = [], comets = [];
+
+        // === ИНИЦИАЛИЗАЦИЯ ===
+        function init() {
+            // Three.js setup
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 10000);
+            renderer = new THREE.WebGLRenderer({canvas: document.getElementById('canvas'), antialias: true});
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            
+            camera.position.copy(cameraPosition);
+
+            // Освещение
+            const ambientLight = new THREE.AmbientLight(0x222244, 0.3);
+            scene.add(ambientLight);
+
+            // Фон - звездное небо
+            createStarfield();
+
+            // Аудио контекст
+            setupAudio();
+
+            // Генерация первой системы
+            generateStarSystem();
+
+            // События
+            setupEvents();
+
+            // Запуск
+            document.getElementById('loading').style.display = 'none';
+            animate();
+        }
+
+        // === ЗВЕЗДНОЕ ПОЛЕ ФОНА ===
+        function createStarfield() {
+            const geometry = new THREE.BufferGeometry();
+            const vertices = [];
+            for (let i = 0; i < 5000; i++) {
+                vertices.push(
+                    (Math.random() - 0.5) * 2000,
+                    (Math.random() - 0.5) * 2000,
+                    (Math.random() - 0.5) * 2000
+                );
+            }
+            geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+            const material = new THREE.PointsMaterial({color: 0xffffff, size: 0.7});
+            const starfield = new THREE.Points(geometry, material);
+            scene.add(starfield);
+        }
+
+        // === ГЕНЕРАЦИЯ ЗВЕЗДНОЙ СИСТЕМЫ ===
+        function generateStarSystem() {
+            // Очистка предыдущей системы
+            stars.forEach(s => scene.remove(s.mesh));
+            planets.forEach(p => scene.remove(p.mesh));
+            stars = [];
+            planets = [];
+
+            // Генерация центральной звезды
+            const starTypes = [
+                {class: 'O', color: 0x9bb0ff, temp: 30000, size: 15, freq: [6000, 20000]},
+                {class: 'B', color: 0xaabfff, temp: 18000, size: 10, freq: [4000, 10000]},
+                {class: 'A', color: 0xcad7ff, temp: 8500, size: 7, freq: [2000, 6000]},
+                {class: 'G', color: 0xfff4ea, temp: 5800, size: 5, freq: [500, 2000]},
+                {class: 'K', color: 0xffd2a1, temp: 4500, size: 4, freq: [250, 500]},
+                {class: 'M', color: 0xffcc6f, temp: 3000, size: 3, freq: [60, 250]}
+            ];
+
+            let starType;
+            if (musicMode === 'electronic') {
+                starType = starTypes[Math.floor(Math.random() * 2)]; // Горячие звезды
+            } else if (musicMode === 'ambient') {
+                starType = starTypes[starTypes.length - 1 - Math.floor(Math.random() * 2)]; // Холодные
+            } else {
+                starType = starTypes[Math.floor(Math.random() * starTypes.length)];
+            }
+
+            const starGeometry = new THREE.SphereGeometry(starType.size, 32, 32);
+            const starMaterial = new THREE.MeshBasicMaterial({
+                color: starType.color,
+                emissive: starType.color,
+                emissiveIntensity: 1
+            });
+            const starMesh = new THREE.Mesh(starGeometry, starMaterial);
+            scene.add(starMesh);
+
+            // Свечение звезды
+            const glowGeometry = new THREE.SphereGeometry(starType.size * 1.5, 32, 32);
+            const glowMaterial = new THREE.MeshBasicMaterial({
+                color: starType.color,
+                transparent: true,
+                opacity: 0.3
+            });
+            const glow = new THREE.Mesh(glowGeometry, glowMaterial);
+            starMesh.add(glow);
+
+            const starName = generateStarName();
+            stars.push({
+                mesh: starMesh,
+                type: starType,
+                name: starName,
+                baseSize: starType.size,
+                freqRange: starType.freq,
+                glow: glow
+            });
+
+            // Генерация планет
+            const numPlanets = musicMode === 'symphonic' ? 8 + Math.floor(Math.random() * 5) : 3 + Math.floor(Math.random() * 6);
+            
+            for (let i = 0; i < numPlanets; i++) {
+                generatePlanet(i, starType);
+            }
+
+            // Генерация астероидного пояса
+            if (Math.random() > 0.5) {
+                generateAsteroidBelt();
+            }
+
+            // Обновление статистики
+            stats.systems++;
+            stats.planets += numPlanets;
+            updateStats();
+        }
+
+        // === ГЕНЕРАЦИЯ ПЛАНЕТЫ ===
+        function generatePlanet(index, starType) {
+            const planetTypes = [
+                {type: 'Rocky', color: 0x8b7355, size: [0.8, 2], atmosphere: false},
+                {type: 'Gas Giant', color: 0xd4a574, size: [3, 6], atmosphere: true},
+                {type: 'Ice Giant', color: 0x4fc3f7, size: [2.5, 4], atmosphere: true},
+                {type: 'Lava World', color: 0xff4500, size: [0.7, 1.5], atmosphere: false},
+                {type: 'Ocean', color: 0x006994, size: [0.9, 2.2], atmosphere: true},
+                {type: 'Crystalline', color: 0xff00ff, size: [1, 2], atmosphere: false}
+            ];
+
+            const planetType = planetTypes[Math.floor(Math.random() * planetTypes.length)];
+            const size = planetType.size[0] + Math.random() * (planetType.size[1] - planetType.size[0]);
+            
+            const planetGeometry = new THREE.SphereGeometry(size, 24, 24);
+            const planetMaterial = new THREE.MeshStandardMaterial({
+                color: planetType.color,
+                roughness: 0.8,
+                metalness: planetType.type === 'Crystalline' ? 0.9 : 0.2
+            });
+            const planetMesh = new THREE.Mesh(planetGeometry, planetMaterial);
+
+            // Орбита
+            const orbitRadius = 20 + index * 15 + Math.random() * 10;
+            const orbitSpeed = (0.001 / (orbitRadius * 0.1)) * (musicMode === 'rock' ? 2 : 1);
+            const orbitAngle = Math.random() * Math.PI * 2;
+            
+            planetMesh.position.x = Math.cos(orbitAngle) * orbitRadius;
+            planetMesh.position.z = Math.sin(orbitAngle) * orbitRadius;
+            planetMesh.position.y = (Math.random() - 0.5) * 5;
+
+            scene.add(planetMesh);
+
+            // Атмосфера
+            if (planetType.atmosphere) {
+                const atmGeometry = new THREE.SphereGeometry(size * 1.2, 24, 24);
+                const atmMaterial = new THREE.MeshBasicMaterial({
+                    color: planetType.color,
+                    transparent: true,
+                    opacity: 0.2
+                });
+                const atmosphere = new THREE.Mesh(atmGeometry, atmMaterial);
+                planetMesh.add(atmosphere);
+            }
+
+            // Кольца для газовых гигантов
+            if (planetType.type === 'Gas Giant' && Math.random() > 0.5) {
+                const ringGeometry = new THREE.RingGeometry(size * 1.5, size * 2.5, 64);
+                const ringMaterial = new THREE.MeshBasicMaterial({
+                    color: 0xccaa88,
+                    side: THREE.DoubleSide,
+                    transparent: true,
+                    opacity: 0.6
+                });
+                const ring = new THREE.Mesh(ringGeometry, ringMaterial);
+                ring.rotation.x = Math.PI / 2;
+                planetMesh.add(ring);
+            }
+
+            const planetName = generatePlanetName(index);
+            const mass = size * size * (planetType.type.includes('Giant') ? 50 : 1);
+            const temp = starType.temp / Math.pow(orbitRadius / 30, 0.5);
+
+            planets.push({
+                mesh: planetMesh,
+                type: planetType.type,
+                name: planetName,
+                orbit: {radius: orbitRadius, speed: orbitSpeed, angle: orbitAngle},
+                size: size,
+                mass: mass,
+                temp: Math.floor(temp),
+                baseY: planetMesh.position.y
+            });
+        }
+
+        // === ГЕНЕРАЦИЯ АСТЕРОИДНОГО ПОЯСА ===
+        function generateAsteroidBelt() {
+            const beltRadius = 80;
+            const numAsteroids = 200;
+            
+            const geometry = new THREE.SphereGeometry(0.3, 8, 8);
+            const material = new THREE.MeshStandardMaterial({color: 0x666666});
+            
+            for (let i = 0; i < numAsteroids; i++) {
+                const asteroid = new THREE.Mesh(geometry, material);
+                const angle = Math.random() * Math.PI * 2;
+                const radius = beltRadius + (Math.random() - 0.5) * 20;
+                asteroid.position.x = Math.cos(angle) * radius;
+                asteroid.position.z = Math.sin(angle) * radius;
+                asteroid.position.y = (Math.random() - 0.5) * 3;
+                scene.add(asteroid);
+            }
+        }
+
+        // === ГЕНЕРАЦИЯ ИМЕН ===
+        function generateStarName() {
+            const prefixes = ['Alpha', 'Beta', 'Gamma', 'Delta', 'Epsilon', 'Zeta'];
+            const suffixes = ['Centauri', 'Draconis', 'Phoenicis', 'Aquilae', 'Lyrae'];
+            const codes = ['HD', 'Gliese', 'Kepler', 'TRAPPIST'];
+            
+            if (Math.random() > 0.5) {
+                return `${prefixes[Math.floor(Math.random() * prefixes.length)]} ${suffixes[Math.floor(Math.random() * suffixes.length)]}`;
+            } else {
+                return `${codes[Math.floor(Math.random() * codes.length)]}-${Math.floor(Math.random() * 9000 + 1000)}`;
+            }
+        }
+
+        function generatePlanetName(index) {
+            const romanNumerals = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X'];
+            const letters = ['b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k'];
+            
+            return Math.random() > 0.5 ? 
+                `${stars[0].name} ${romanNumerals[index]}` :
+                `${stars[0].name} ${letters[index]}`;
+        }
+
+        // === НАСТРОЙКА АУДИО ===
+        function setupAudio() {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            analyser = audioContext.createAnalyser();
+            analyser.fftSize = 1024;
+            dataArray = new Uint8Array(analyser.frequencyBinCount);
+            analyser.connect(audioContext.destination);
+
+            // Обработка загрузки файла
+            document.getElementById('audioFile').addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        audioContext.decodeAudioData(event.target.result, function(buffer) {
+                            if (audioSource) audioSource.stop();
+                            audioSource = audioContext.createBufferSource();
+                            audioSource.buffer = buffer;
+                            audioSource.connect(analyser);
+                            audioSource.loop = true;
+                            audioSource.start(0);
+                            isAudioPlaying = true;
+                        });
+                    };
+                    reader.readAsArrayBuffer(file);
+                }
+            });
+        }
+
+        function startMicrophone() {
+            navigator.mediaDevices.getUserMedia({audio: true})
+                .then(stream => {
+                    if (audioSource) audioSource.stop();
+                    audioSource = audioContext.createMediaStreamSource(stream);
+                    audioSource.connect(analyser);
+                    isAudioPlaying = true;
+                })
+                .catch(err => alert('Микрофон недоступен: ' + err));
+        }
+
+        function generateAmbient() {
+            // Простая генерация ambient звука с помощью Web Audio API
+            if (audioSource) audioSource.stop();
+            
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            const filter = audioContext.createBiquadFilter();
+            
+            oscillator.type = 'sine';
+            oscillator.frequency.value = 110 + Math.random() * 220;
+            filter.type = 'lowpass';
+            filter.frequency.value = 800;
+            gainNode.gain.value = 0.3;
+            
+            oscillator.connect(filter);
+            filter.connect(gainNode);
+            gainNode.connect(analyser);
+            
+            oscillator.start();
+            audioSource = oscillator;
+            isAudioPlaying = true;
+
+            // Модуляция
+            setInterval(() => {
+                if (audioSource === oscillator) {
+                    oscillator.frequency.value = 110 + Math.random() * 220;
+                }
+            }, 3000);
+        }
+
+        function toggleAudio() {
+            if (audioContext.state === 'running') {
+                audioContext.suspend();
+            } else {
+                audioContext.resume();
+            }
+        }
+
+        // === ОБРАБОТКА АУДИО ===
+        function processAudio() {
+            if (!analyser) return;
+            
+            analyser.getByteFrequencyData(dataArray);
+
+            // Частотные диапазоны
+            const ranges = {
+                subBass: getAverageFrequency(0, 60, dataArray),
+                bass: getAverageFrequency(60, 250, dataArray),
+                lowMid: getAverageFrequency(250, 500, dataArray),
+                mid: getAverageFrequency(500, 2000, dataArray),
+                highMid: getAverageFrequency(2000, 6000, dataArray),
+                high: getAverageFrequency(6000, 20000, dataArray)
+            };
+
+            // Реакция звезд
+            stars.forEach(star => {
+                const freqValue = ranges[getFreqRangeForStar(star)] / 255;
+                const scale = 1 + freqValue * 0.3;
+                star.mesh.scale.set(scale, scale, scale);
+                star.glow.material.opacity = 0.2 + freqValue * 0.3;
+            });
+
+            // Реакция планет
+            planets.forEach(planet => {
+                const bassValue = ranges.bass / 255;
+                planet.mesh.position.y = planet.baseY + bassValue * 5;
+                planet.mesh.rotation.y += 0.01 * (1 + bassValue);
+            });
+
+            // Спектрограмма
+            drawSpectrum(dataArray);
+        }
+
+        function getAverageFrequency(startFreq, endFreq, dataArray) {
+            const nyquist = audioContext.sampleRate / 2;
+            const startBin = Math.floor(startFreq / nyquist * dataArray.length);
+            const endBin = Math.floor(endFreq / nyquist * dataArray.length);
+            
+            let sum = 0;
+            for (let i = startBin; i < endBin; i++) {
+                sum += dataArray[i];
+            }
+            return sum / (endBin - startBin);
+        }
+
+        function getFreqRangeForStar(star) {
+            const temp = star.type.temp;
+            if (temp > 15000) return 'high';
+            if (temp > 8000) return 'highMid';
+            if (temp > 5000) return 'mid';
+            if (temp > 3500) return 'lowMid';
+            return 'bass';
+        }
+
+        // === СПЕКТРОГРАММА ===
+        function drawSpectrum(dataArray) {
+            const canvas = document.getElementById('spectrumCanvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            const barWidth = canvas.width / dataArray.length;
+            
+            for (let i = 0; i < dataArray.length; i++) {
+                const barHeight = (dataArray[i] / 255) * canvas.height;
+                const hue = (i / dataArray.length) * 360;
+                ctx.fillStyle = `hsl(${hue}, 100%, 50%)`;
+                ctx.fillRect(i * barWidth, canvas.height - barHeight, barWidth, barHeight);
+            }
+        }
+
+        // === МИНИКАРТА ===
+        function drawMinimap() {
+            const canvas = document.getElementById('minimapCanvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const scale = 0.8;
+
+            // Звезда
+            ctx.fillStyle = '#ffff00';
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, 5, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Планеты
+            planets.forEach(planet => {
+                const x = centerX + planet.mesh.position.x * scale;
+                const y = centerY + planet.mesh.position.z * scale;
+                ctx.fillStyle = '#6af';
+                ctx.beginPath();
+                ctx.arc(x, y, 2, 0, Math.PI * 2);
+                ctx.fill();
+            });
+
+            // Камера
+            ctx.fillStyle = '#0f0';
+            const camX = centerX + camera.position.x * scale * 0.1;
+            const camY = centerY + camera.position.z * scale * 0.1;
+            ctx.beginPath();
+            ctx.arc(camX, camY, 3, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        // === СОБЫТИЯ ===
+        function setupEvents() {
+            window.addEventListener('resize', onResize);
+            
+            const canvas = document.getElementById('canvas');
+            canvas.addEventListener('mousedown', onMouseDown);
+            canvas.addEventListener('mousemove', onMouseMove);
+            canvas.addEventListener('mouseup', onMouseUp);
+            canvas.addEventListener('wheel', onWheel);
+            canvas.addEventListener('click', onClick);
+            
+            window.addEventListener('keydown', e => keys[e.key] = true);
+            window.addEventListener('keyup', e => keys[e.key] = false);
+        }
+
+        function onResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        function onMouseDown(e) {
+            mouseDown = true;
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+        }
+
+        function onMouseMove(e) {
+            if (!mouseDown || cameraMode !== 'free') return;
+            
+            const deltaX = e.clientX - mouseX;
+            const deltaY = e.clientY - mouseY;
+            
+            cameraRotation.y -= deltaX * 0.005;
+            cameraRotation.x -= deltaY * 0.005;
+            cameraRotation.x = Math.max(-Math.PI/2, Math.min(Math.PI/2, cameraRotation.x));
+            
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+        }
+
+        function onMouseUp() {
+            mouseDown = false;
+        }
+
+        function onWheel(e) {
+            e.preventDefault();
+            const delta = e.deltaY * 0.1;
+            cameraPosition.multiplyScalar(1 + delta * 0.001);
+        }
+
+        function onClick(e) {
+            const mouse = new THREE.Vector2(
+                (e.clientX / window.innerWidth) * 2 - 1,
+                -(e.clientY / window.innerHeight) * 2 + 1
+            );
+
+            const raycaster = new THREE.Raycaster();
+            raycaster.setFromCamera(mouse, camera);
+
+            // Проверка пересечений
+            const allObjects = [...stars.map(s => s.mesh), ...planets.map(p => p.mesh)];
+            const intersects = raycaster.intersectObjects(allObjects);
+
+            if (intersects.length > 0) {
+                selectObject(intersects[0].object);
+            }
+        }
+
+        function selectObject(mesh) {
+            selectedObject = null;
+            
+            // Найти объект
+            stars.forEach(star => {
+                if (star.mesh === mesh) {
+                    selectedObject = star;
+                    displayStarInfo(star);
+                }
+            });
+            
+            planets.forEach(planet => {
+                if (planet.mesh === mesh) {
+                    selectedObject = planet;
+                    displayPlanetInfo(planet);
+                }
+            });
+        }
+
+        function displayStarInfo(star) {
+            document.getElementById('objectName').textContent = `⭐ ${star.name}`;
+            document.getElementById('objectInfo').innerHTML = `
+                <div class="stat-line"><span class="stat-label">Класс:</span><span>${star.type.class}</span></div>
+                <div class="stat-line"><span class="stat-label">Температура:</span><span>${star.type.temp} K</span></div>
+                <div class="stat-line"><span class="stat-label">Радиус:</span><span>${star.baseSize.toFixed(1)} R☉</span></div>
+                <div class="stat-line"><span class="stat-label">Цвет:</span><span>#${star.type.color.toString(16)}</span></div>
+                <div class="stat-line"><span class="stat-label">Частотный диапазон:</span><span>${star.freqRange[0]}-${star.freqRange[1]} Hz</span></div>
+            `;
+        }
+
+        function displayPlanetInfo(planet) {
+            document.getElementById('objectName').textContent = `🌍 ${planet.name}`;
+            document.getElementById('objectInfo').innerHTML = `
+                <div class="stat-line"><span class="stat-label">Тип:</span><span>${planet.type}</span></div>
+                <div class="stat-line"><span class="stat-label">Радиус:</span><span>${planet.size.toFixed(2)} R🜨</span></div>
+                <div class="stat-line"><span class="stat-label">Масса:</span><span>${planet.mass.toFixed(1)} M🜨</span></div>
+                <div class="stat-line"><span class="stat-label">Температура:</span><span>${planet.temp} K</span></div>
+                <div class="stat-line"><span class="stat-label">Орбита:</span><span>${planet.orbit.radius.toFixed(1)} AU</span></div>
+                <div class="stat-line"><span class="stat-label">Период:</span><span>${(planet.orbit.radius * 365 / 30).toFixed(1)} дней</span></div>
+            `;
+        }
+
+        // === УПРАВЛЕНИЕ КАМЕРОЙ ===
+        function handleCameraMovement() {
+            const speed = (keys['Shift'] ? 2 : 0.5) * timeScale;
+            
+            if (cameraMode === 'free') {
+                const forward = new THREE.Vector3(
+                    Math.sin(cameraRotation.y),
+                    0,
+                    Math.cos(cameraRotation.y)
+                );
+                const right = new THREE.Vector3(
+                    Math.cos(cameraRotation.y),
+                    0,
+                    -Math.sin(cameraRotation.y)
+                );
+
+                if (keys['w'] || keys['W'] || keys['ц'] || keys['Ц']) cameraPosition.add(forward.multiplyScalar(speed));
+                if (keys['s'] || keys['S'] || keys['ы'] || keys['Ы']) cameraPosition.add(forward.multiplyScalar(-speed));
+                if (keys['a'] || keys['A'] || keys['ф'] || keys['Ф']) cameraPosition.add(right.multiplyScalar(-speed));
+                if (keys['d'] || keys['D'] || keys['в'] || keys['В']) cameraPosition.add(right.multiplyScalar(speed));
+                if (keys['q'] || keys['Q'] || keys['й'] || keys['Й']) cameraPosition.y += speed;
+                if (keys['e'] || keys['E'] || keys['у'] || keys['У']) cameraPosition.y -= speed;
+
+                camera.position.copy(cameraPosition);
+                camera.rotation.order = 'YXZ';
+                camera.rotation.y = cameraRotation.y;
+                camera.rotation.x = cameraRotation.x;
+
+                stats.distance += speed * 0.01;
+            } else if (cameraMode === 'orbit' && selectedObject) {
+                const distance = 30;
+                const time = Date.now() * 0.0005;
+                camera.position.x = selectedObject.mesh.position.x + Math.cos(time) * distance;
+                camera.position.z = selectedObject.mesh.position.z + Math.sin(time) * distance;
+                camera.position.y = selectedObject.mesh.position.y + 10;
+                camera.lookAt(selectedObject.mesh.position);
+            } else if (cameraMode === 'galaxy') {
+                camera.position.set(0, 300, 0);
+                camera.lookAt(0, 0, 0);
+            } else if (cameraMode === 'cinematic') {
+                const time = Date.now() * 0.0003;
+                camera.position.x = Math.cos(time) * 150;
+                camera.position.z = Math.sin(time) * 150;
+                camera.position.y = 50 + Math.sin(time * 0.5) * 30;
+                camera.lookAt(0, 0, 0);
+            }
+        }
+
+        // === ОБНОВЛЕНИЕ ОРБИТ ===
+        function updateOrbits(delta) {
+            planets.forEach(planet => {
+                planet.orbit.angle += planet.orbit.speed * delta * timeScale;
+                planet.mesh.position.x = Math.cos(planet.orbit.angle) * planet.orbit.radius;
+                planet.mesh.position.z = Math.sin(planet.orbit.angle) * planet.orbit.radius;
+            });
+        }
+
+        // === АНИМАЦИЯ ===
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            const delta = clock.getDelta();
+            
+            processAudio();
+            handleCameraMovement();
+            updateOrbits(delta);
+            drawMinimap();
+            
+            renderer.render(scene, camera);
+        }
+
+        // === UI ФУНКЦИИ ===
+        function changeCameraMode(mode) {
+            cameraMode = mode;
+        }
+
+        function changeMusicMode(mode) {
+            musicMode = mode;
+            generateStarSystem();
+        }
+
+        function changeTimeSpeed(value) {
+            const v = parseFloat(value);
+            timeScale = v < 0 ? Math.pow(10, v / 10) : Math.pow(10, v / 10);
+            document.getElementById('timeSpeed').textContent = timeScale.toFixed(1);
+        }
+
+        function changeFFTSize(size) {
+            analyser.fftSize = parseInt(size);
+            dataArray = new Uint8Array(analyser.frequencyBinCount);
+        }
+
+        function generateNewSystem() {
+            currentSeed = Math.random().toString(36).substr(2, 9);
+            generateStarSystem();
+        }
+
+        function hyperJump() {
+            // Эффект гиперпрыжка
+            const targetPos = new THREE.Vector3(
+                (Math.random() - 0.5) * 500,
+                50 + (Math.random() - 0.5) * 100,
+                (Math.random() - 0.5) * 500
+            );
+            
+            const duration = 2000;
+            const start = Date.now();
+            const startPos = cameraPosition.clone();
+            
+            function jump() {
+                const progress = Math.min((Date.now() - start) / duration, 1);
+                cameraPosition.lerpVectors(startPos, targetPos, progress);
+                
+                if (progress < 1) {
+                    requestAnimationFrame(jump);
+                } else {
+                    generateNewSystem();
+                }
+            }
+            
+            jump();
+        }
+
+        function saveBookmark() {
+            const bookmark = {
+                seed: currentSeed,
+                position: cameraPosition.toArray(),
+                system: stars[0]?.name || 'Unknown'
+            };
+            
+            let bookmarks = JSON.parse(localStorage.getItem('spaceBookmarks') || '[]');
+            bookmarks.push(bookmark);
+            localStorage.setItem('spaceBookmarks', JSON.stringify(bookmarks));
+            
+            alert(`Система "${bookmark.system}" сохранена!`);
+        }
+
+        function screenshot() {
+            renderer.render(scene, camera);
+            const dataURL = renderer.domElement.toDataURL('image/png');
+            const link = document.createElement('a');
+            link.download = `space_${Date.now()}.png`;
+            link.href = dataURL;
+            link.click();
+        }
+
+        function toggleUI() {
+            const panels = document.querySelectorAll('.ui-panel');
+            panels.forEach(panel => {
+                panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+            });
+        }
+
+        function updateStats() {
+            document.getElementById('systemsVisited').textContent = stats.systems;
+            document.getElementById('planetsFound').textContent = stats.planets;
+            document.getElementById('distanceTraveled').textContent = stats.distance.toFixed(2) + ' пк';
+        }
+
+        // === ЗАПУСК ===
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>

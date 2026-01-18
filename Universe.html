@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🌌 Infinity Universe</title>
+    <title>Stellar Symphony</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@300;400;700;900&display=swap');
         
         * {
             margin: 0;
@@ -24,113 +24,97 @@
             display: block;
             width: 100%;
             height: 100vh;
-            background: radial-gradient(ellipse at center, #0a0e27 0%, #000000 100%);
         }
 
         .ui-panel {
             position: absolute;
-            background: rgba(5, 10, 30, 0.3);
-            backdrop-filter: blur(20px) saturate(180%);
-            -webkit-backdrop-filter: blur(20px) saturate(180%);
-            border: 1px solid rgba(100, 200, 255, 0.1);
+            background: linear-gradient(135deg, rgba(10, 15, 35, 0.7), rgba(15, 25, 50, 0.5));
+            backdrop-filter: blur(30px) saturate(200%);
+            border: 1px solid rgba(100, 200, 255, 0.15);
             border-radius: 20px;
-            padding: 20px;
+            padding: 25px;
             color: #e0f0ff;
             font-size: 13px;
-            box-shadow: 0 8px 32px rgba(0, 100, 255, 0.1),
-                        inset 0 1px 0 rgba(255, 255, 255, 0.1);
-            animation: fadeIn 1s ease-out;
-            transition: all 0.3s ease;
+            box-shadow: 0 15px 50px rgba(0, 100, 255, 0.15),
+                        inset 0 2px 0 rgba(255, 255, 255, 0.1),
+                        0 0 80px rgba(100, 150, 255, 0.05);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .ui-panel:hover {
-            background: rgba(10, 20, 50, 0.4);
+            background: linear-gradient(135deg, rgba(15, 25, 50, 0.8), rgba(20, 35, 65, 0.6));
             border-color: rgba(100, 200, 255, 0.3);
-            box-shadow: 0 8px 32px rgba(0, 150, 255, 0.2),
-                        inset 0 1px 0 rgba(255, 255, 255, 0.15);
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 0.6; }
-            50% { opacity: 1; }
-        }
-
-        @keyframes glow {
-            0%, 100% { box-shadow: 0 0 5px rgba(100, 200, 255, 0.3); }
-            50% { box-shadow: 0 0 20px rgba(100, 200, 255, 0.6); }
+            box-shadow: 0 20px 60px rgba(0, 150, 255, 0.25),
+                        inset 0 2px 0 rgba(255, 255, 255, 0.15),
+                        0 0 100px rgba(100, 150, 255, 0.1);
         }
 
         #controls {
-            top: 20px;
-            left: 20px;
-            width: 320px;
-            max-height: 85vh;
+            top: 30px;
+            left: 30px;
+            width: 380px;
+            max-height: 90vh;
             overflow-y: auto;
-            overflow-x: hidden;
         }
 
         #info {
-            top: 20px;
-            right: 20px;
-            width: 340px;
-            max-height: 85vh;
+            top: 30px;
+            right: 30px;
+            width: 400px;
+            max-height: 90vh;
             overflow-y: auto;
         }
 
         #spectrum {
-            bottom: 20px;
+            bottom: 30px;
             left: 50%;
             transform: translateX(-50%);
-            width: 650px;
-            height: 140px;
-            padding: 15px;
-            background: rgba(5, 10, 30, 0.25);
+            width: 700px;
+            height: 160px;
+            padding: 20px;
         }
 
-        #minimap {
-            bottom: 20px;
-            right: 20px;
-            width: 220px;
-            height: 220px;
+        #editor {
+            display: none;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 500px;
+            max-height: 80vh;
+            overflow-y: auto;
+            z-index: 1000;
         }
 
         h3 {
-            margin: 0 0 15px 0;
+            margin: 0 0 20px 0;
             color: #6cf;
-            font-size: 18px;
-            font-weight: 700;
+            font-size: 20px;
+            font-weight: 900;
             text-transform: uppercase;
-            letter-spacing: 2px;
-            border-bottom: 2px solid rgba(100, 200, 255, 0.2);
-            padding-bottom: 8px;
-            text-shadow: 0 0 10px rgba(100, 200, 255, 0.5);
+            letter-spacing: 3px;
+            border-bottom: 3px solid;
+            border-image: linear-gradient(90deg, #6cf, #96f, transparent) 1;
+            padding-bottom: 12px;
+            text-shadow: 0 0 20px rgba(100, 200, 255, 0.6),
+                         0 0 40px rgba(100, 200, 255, 0.3);
         }
 
         button {
-            background: linear-gradient(135deg, rgba(100, 150, 255, 0.3) 0%, rgba(150, 100, 255, 0.3) 100%);
-            border: 1px solid rgba(100, 200, 255, 0.4);
+            background: linear-gradient(135deg, rgba(100, 150, 255, 0.4), rgba(150, 100, 255, 0.4));
+            border: 2px solid rgba(100, 200, 255, 0.5);
             color: white;
-            padding: 10px 18px;
-            border-radius: 12px;
+            padding: 12px 24px;
+            border-radius: 15px;
             cursor: pointer;
-            margin: 5px 5px 5px 0;
-            font-size: 12px;
+            margin: 6px 6px 6px 0;
+            font-size: 13px;
             font-family: 'Orbitron', sans-serif;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
+            font-weight: 700;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
             overflow: hidden;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         button:before {
@@ -140,10 +124,18 @@
             left: 50%;
             width: 0;
             height: 0;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.2);
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.3), transparent);
             transform: translate(-50%, -50%);
             transition: width 0.6s, height 0.6s;
+            border-radius: 50%;
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+            border-color: rgba(100, 200, 255, 0.9);
+            box-shadow: 0 8px 25px rgba(100, 150, 255, 0.5),
+                        0 0 30px rgba(100, 200, 255, 0.3);
+            background: linear-gradient(135deg, rgba(120, 170, 255, 0.5), rgba(170, 120, 255, 0.5));
         }
 
         button:hover:before {
@@ -151,121 +143,129 @@
             height: 300px;
         }
 
-        button:hover {
-            transform: translateY(-2px);
-            border-color: rgba(100, 200, 255, 0.8);
-            box-shadow: 0 5px 15px rgba(100, 150, 255, 0.4);
-        }
-
         button:active {
-            transform: translateY(0);
+            transform: translateY(-1px);
         }
 
         input[type="range"] {
             width: 100%;
-            margin: 10px 0;
+            margin: 12px 0;
             -webkit-appearance: none;
             background: transparent;
+            height: 6px;
         }
 
         input[type="range"]::-webkit-slider-track {
             width: 100%;
-            height: 4px;
-            background: linear-gradient(90deg, rgba(100, 150, 255, 0.3), rgba(150, 100, 255, 0.3));
-            border-radius: 2px;
+            height: 6px;
+            background: linear-gradient(90deg, 
+                rgba(100, 150, 255, 0.3), 
+                rgba(150, 100, 255, 0.3));
+            border-radius: 3px;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3);
         }
 
         input[type="range"]::-webkit-slider-thumb {
             -webkit-appearance: none;
-            height: 16px;
-            width: 16px;
+            height: 20px;
+            width: 20px;
             border-radius: 50%;
             background: linear-gradient(135deg, #6cf, #96f);
             cursor: pointer;
-            box-shadow: 0 0 10px rgba(100, 200, 255, 0.8);
+            box-shadow: 0 0 15px rgba(100, 200, 255, 0.9),
+                        0 0 30px rgba(100, 200, 255, 0.5);
             transition: all 0.2s;
+            border: 2px solid rgba(255, 255, 255, 0.3);
         }
 
         input[type="range"]::-webkit-slider-thumb:hover {
-            transform: scale(1.2);
-            box-shadow: 0 0 20px rgba(100, 200, 255, 1);
+            transform: scale(1.3);
+            box-shadow: 0 0 25px rgba(100, 200, 255, 1),
+                        0 0 50px rgba(100, 200, 255, 0.7);
         }
 
-        select, input[type="file"] {
+        select, input[type="file"], input[type="text"], input[type="number"] {
             width: 100%;
-            padding: 10px;
-            margin: 8px 0;
-            background: rgba(20, 30, 60, 0.4);
-            border: 1px solid rgba(100, 200, 255, 0.3);
-            border-radius: 10px;
+            padding: 12px 16px;
+            margin: 10px 0;
+            background: rgba(20, 30, 60, 0.5);
+            border: 2px solid rgba(100, 200, 255, 0.3);
+            border-radius: 12px;
             color: #e0f0ff;
             font-family: 'Orbitron', sans-serif;
-            font-size: 12px;
+            font-size: 13px;
             transition: all 0.3s;
         }
 
-        select:hover, select:focus {
-            background: rgba(30, 40, 80, 0.5);
-            border-color: rgba(100, 200, 255, 0.5);
+        select:hover, select:focus,
+        input[type="text"]:hover, input[type="text"]:focus,
+        input[type="number"]:hover, input[type="number"]:focus {
+            background: rgba(30, 40, 80, 0.6);
+            border-color: rgba(100, 200, 255, 0.6);
             outline: none;
+            box-shadow: 0 0 20px rgba(100, 150, 255, 0.3);
         }
 
         .stat-line {
             display: flex;
             justify-content: space-between;
-            margin: 8px 0;
-            padding: 8px 12px;
-            background: rgba(20, 40, 80, 0.2);
-            border-radius: 8px;
-            border-left: 3px solid rgba(100, 200, 255, 0.4);
+            margin: 10px 0;
+            padding: 12px 16px;
+            background: linear-gradient(90deg, 
+                rgba(20, 40, 80, 0.3), 
+                rgba(40, 20, 80, 0.2));
+            border-radius: 10px;
+            border-left: 4px solid rgba(100, 200, 255, 0.5);
             transition: all 0.3s;
         }
 
         .stat-line:hover {
-            background: rgba(30, 50, 100, 0.3);
-            border-left-color: rgba(100, 200, 255, 0.8);
-            transform: translateX(5px);
+            background: linear-gradient(90deg, 
+                rgba(30, 50, 100, 0.4), 
+                rgba(50, 30, 100, 0.3));
+            border-left-color: rgba(100, 200, 255, 0.9);
+            transform: translateX(8px);
+            box-shadow: 0 4px 15px rgba(100, 150, 255, 0.2);
         }
 
         .stat-label {
             color: #6cf;
-            text-shadow: 0 0 5px rgba(100, 200, 255, 0.3);
-        }
-
-        canvas {
-            cursor: crosshair;
-        }
-
-        #spectrumCanvas {
-            width: 100%;
-            height: 110px;
-            border-radius: 10px;
-        }
-
-        #minimapCanvas {
-            width: 100%;
-            height: 100%;
-            border-radius: 15px;
+            font-weight: 700;
+            text-shadow: 0 0 10px rgba(100, 200, 255, 0.4);
         }
 
         .control-group {
-            margin: 18px 0;
-            padding: 15px;
-            background: rgba(10, 20, 50, 0.2);
-            border-radius: 12px;
-            border: 1px solid rgba(100, 200, 255, 0.1);
+            margin: 22px 0;
+            padding: 20px;
+            background: linear-gradient(135deg, 
+                rgba(10, 20, 50, 0.3), 
+                rgba(20, 10, 50, 0.2));
+            border-radius: 15px;
+            border: 1px solid rgba(100, 200, 255, 0.15);
             transition: all 0.3s;
         }
 
         .control-group:hover {
-            background: rgba(15, 25, 60, 0.3);
-            border-color: rgba(100, 200, 255, 0.2);
+            background: linear-gradient(135deg, 
+                rgba(15, 25, 60, 0.4), 
+                rgba(25, 15, 60, 0.3));
+            border-color: rgba(100, 200, 255, 0.25);
+            box-shadow: 0 5px 20px rgba(100, 150, 255, 0.15);
         }
 
         .control-group strong {
             color: #8df;
-            font-size: 13px;
-            text-shadow: 0 0 8px rgba(100, 200, 255, 0.4);
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            text-shadow: 0 0 10px rgba(140, 220, 255, 0.4);
+        }
+
+        #spectrumCanvas {
+            width: 100%;
+            height: 120px;
+            border-radius: 15px;
         }
 
         ::-webkit-scrollbar {
@@ -278,12 +278,17 @@
         }
 
         ::-webkit-scrollbar-thumb {
-            background: linear-gradient(180deg, rgba(100, 150, 255, 0.5), rgba(150, 100, 255, 0.5));
+            background: linear-gradient(180deg, 
+                rgba(100, 150, 255, 0.6), 
+                rgba(150, 100, 255, 0.6));
             border-radius: 10px;
+            border: 2px solid rgba(10, 20, 40, 0.3);
         }
 
         ::-webkit-scrollbar-thumb:hover {
-            background: linear-gradient(180deg, rgba(100, 150, 255, 0.8), rgba(150, 100, 255, 0.8));
+            background: linear-gradient(180deg, 
+                rgba(120, 170, 255, 0.8), 
+                rgba(170, 120, 255, 0.8));
         }
 
         #loading {
@@ -296,14 +301,14 @@
         }
 
         .spinner {
-            border: 4px solid rgba(100, 200, 255, 0.1);
-            border-top: 4px solid #6cf;
+            border: 5px solid rgba(100, 200, 255, 0.1);
+            border-top: 5px solid #6cf;
             border-radius: 50%;
-            width: 60px;
-            height: 60px;
+            width: 80px;
+            height: 80px;
             animation: spin 1s linear infinite;
-            margin: 20px auto;
-            box-shadow: 0 0 20px rgba(100, 200, 255, 0.3);
+            margin: 25px auto;
+            box-shadow: 0 0 40px rgba(100, 200, 255, 0.5);
         }
 
         @keyframes spin {
@@ -312,13 +317,15 @@
         }
 
         .cosmic-title {
-            font-size: 32px;
-            background: linear-gradient(135deg, #6cf, #96f, #6cf);
-            background-size: 200% 200%;
+            font-size: 48px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #6cf, #96f, #c6f, #6cf);
+            background-size: 300% 300%;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            animation: gradientShift 3s ease infinite;
-            text-shadow: 0 0 30px rgba(100, 200, 255, 0.5);
+            animation: gradientShift 4s ease infinite;
+            letter-spacing: 4px;
+            text-shadow: 0 0 50px rgba(100, 200, 255, 0.5);
         }
 
         @keyframes gradientShift {
@@ -328,126 +335,98 @@
 
         .hint {
             font-size: 11px;
-            color: rgba(200, 220, 255, 0.6);
-            margin-top: 5px;
+            color: rgba(200, 220, 255, 0.5);
+            margin-top: 8px;
             font-style: italic;
+            font-weight: 300;
         }
 
-        option {
-            background: #0a1020;
-            color: #e0f0ff;
+        .planet-item {
+            background: rgba(30, 50, 100, 0.3);
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+            border-left: 3px solid;
+            transition: all 0.3s;
         }
 
-        .glow-text {
-            animation: pulse 2s ease-in-out infinite;
+        .planet-item:hover {
+            background: rgba(40, 60, 120, 0.4);
+            transform: translateX(5px);
+        }
+
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 999;
+            backdrop-filter: blur(5px);
+        }
+
+        .glow-value {
+            color: #6cf;
+            font-weight: 700;
+            text-shadow: 0 0 10px rgba(100, 200, 255, 0.6);
         }
     </style>
 </head>
 <body>
     <canvas id="canvas"></canvas>
+    <div class="overlay" id="overlay"></div>
     
     <div id="loading">
-        <div class="cosmic-title">∞ INFINITY UNIVERSE</div>
+        <div class="cosmic-title">STELLAR SYMPHONY</div>
         <div class="spinner"></div>
-        <div class="glow-text">Исследуя неизведанное...</div>
+        <div>Generating Universe...</div>
     </div>
 
     <div id="controls" class="ui-panel">
-        <h3>⚡ Навигация</h3>
+        <h3>Control Center</h3>
         
         <div class="control-group">
-            <strong>🎵 Звуковой Портал</strong>
+            <strong>Audio Source</strong>
             <input type="file" id="audioFile" accept="audio/*">
-            <button onclick="startMicrophone()">🎤 Микрофон</button>
-            <button onclick="generateAmbient()">🌊 Cosmic Ambient</button>
-            <button onclick="toggleAudio()">⏯ Пауза</button>
-            <div class="hint">Музыка оживит вселенную</div>
+            <button onclick="startMicrophone()">Microphone</button>
+            <button onclick="generateAmbient()">Cosmic Ambient</button>
+            <button onclick="toggleAudio()" id="audioBtn">Play</button>
         </div>
 
         <div class="control-group">
-            <strong>📷 Режим Зрения</strong>
-            <select id="cameraMode" onchange="changeCameraMode(this.value)">
-                <option value="free">🚀 Свободный полет</option>
-                <option value="orbit">🌍 Орбитальная съемка</option>
-                <option value="cinematic">🎬 Кинематографический</option>
-                <option value="galaxy">🌌 Галактический обзор</option>
-            </select>
+            <strong>Volume: <span id="volumeDisplay" class="glow-value">50</span>%</strong>
+            <input type="range" id="volumeSlider" min="0" max="100" value="50" oninput="changeVolume(this.value)">
         </div>
 
         <div class="control-group">
-            <strong>🎨 Звуковой Спектр</strong>
-            <select id="musicMode" onchange="changeMusicMode(this.value)">
-                <option value="normal">✨ Стандартный</option>
-                <option value="symphonic">🎻 Симфонический</option>
-                <option value="electronic">⚡ Электронный</option>
-                <option value="ambient">🌊 Эмбиент</option>
-                <option value="rock">🔥 Рок/Метал</option>
-                <option value="jazz">🎷 Джаз</option>
-            </select>
-        </div>
-
-        <div class="control-group">
-            <strong>⏱ Временной Поток: <span id="timeSpeed" class="glow-text">1.0</span>x</strong>
+            <strong>Time Flow: <span id="timeSpeed" class="glow-value">1.0</span>x</strong>
             <input type="range" id="timeSlider" min="-10" max="30" value="0" step="1" oninput="changeTimeSpeed(this.value)">
-            <div class="hint">Управляйте течением времени</div>
         </div>
 
         <div class="control-group">
-            <button onclick="hyperJump()">⚡ Гиперпрыжок</button>
-            <button onclick="saveBookmark()">⭐ Закладка</button>
-            <button onclick="screenshot()">📸 Снимок</button>
-            <button onclick="toggleUI()">👁 UI</button>
+            <strong>System Control</strong>
+            <button onclick="generateNewSystem()">Generate New</button>
+            <button onclick="openEditor()">Edit System</button>
+            <button onclick="saveSystem()">Save System</button>
+            <button onclick="loadSystem()">Load System</button>
         </div>
 
         <div class="control-group">
-            <strong>📊 Журнал Путешествий</strong>
-            <div class="stat-line">
-                <span class="stat-label">Систем посещено:</span>
-                <span id="systemsVisited" class="glow-text">0</span>
-            </div>
-            <div class="stat-line">
-                <span class="stat-label">Звезд открыто:</span>
-                <span id="starsFound" class="glow-text">0</span>
-            </div>
-            <div class="stat-line">
-                <span class="stat-label">Дистанция:</span>
-                <span id="distanceTraveled" class="glow-text">0 св. лет</span>
-            </div>
+            <button onclick="screenshot()">Screenshot</button>
+            <button onclick="toggleUI()">Toggle UI</button>
         </div>
     </div>
 
     <div id="info" class="ui-panel">
-        <h3 id="objectName">✨ Тайны Космоса</h3>
+        <h3 id="objectName">Stellar System</h3>
         <div id="objectInfo">
-            <p style="color: rgba(200, 220, 255, 0.7); line-height: 1.6;">
-                Перед вами бесконечная процедурно-генерируемая вселенная. 
-                Каждая звезда уникальна, каждая система - неповторима.
+            <p style="line-height: 1.8; color: rgba(200, 220, 255, 0.8); font-size: 13px;">
+                A procedurally-generated stellar system with reactive audio visualization.
+                The stars in the sky pulse with their frequency ranges.
+                Click on objects to explore.
             </p>
-            <br>
-            <div class="stat-line">
-                <span class="stat-label">🖱 Вращение</span>
-                <span>ЛКМ + Drag</span>
-            </div>
-            <div class="stat-line">
-                <span class="stat-label">🔍 Масштаб</span>
-                <span>Колесо мыши</span>
-            </div>
-            <div class="stat-line">
-                <span class="stat-label">🎯 Выбор</span>
-                <span>Клик по объекту</span>
-            </div>
-            <div class="stat-line">
-                <span class="stat-label">⌨ Движение</span>
-                <span>WASD / Стрелки</span>
-            </div>
-            <div class="stat-line">
-                <span class="stat-label">⚡ Ускорение</span>
-                <span>Shift</span>
-            </div>
-            <div class="stat-line">
-                <span class="stat-label">⏸ Пауза</span>
-                <span>Пробел</span>
-            </div>
         </div>
     </div>
 
@@ -455,257 +434,169 @@
         <canvas id="spectrumCanvas"></canvas>
     </div>
 
-    <div id="minimap" class="ui-panel">
-        <canvas id="minimapCanvas"></canvas>
+    <div id="editor" class="ui-panel">
+        <h3>System Editor</h3>
+        
+        <div class="control-group">
+            <strong>Star Type</strong>
+            <select id="starTypeSelect">
+                <option value="O">O - Blue Hypergiant (30000K)</option>
+                <option value="B">B - Blue-White (18000K)</option>
+                <option value="A">A - White (8500K)</option>
+                <option value="G" selected>G - Yellow (5800K)</option>
+                <option value="K">K - Orange (4500K)</option>
+                <option value="M">M - Red (3000K)</option>
+            </select>
+        </div>
+
+        <div class="control-group">
+            <strong>Number of Planets: <span id="planetCount" class="glow-value">5</span></strong>
+            <input type="range" id="planetCountSlider" min="1" max="12" value="5" oninput="updatePlanetCount(this.value)">
+        </div>
+
+        <div id="planetsList"></div>
+
+        <button onclick="applyChanges()">Apply Changes</button>
+        <button onclick="closeEditor()">Cancel</button>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script>
-        // === ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ===
         let scene, camera, renderer, audioContext, analyser, dataArray;
-        let stars = [], planets = [], selectedObject = null;
-        let cameraMode = 'free', musicMode = 'normal';
-        let timeScale = 1.0, stats = {systems: 0, stars: 0, distance: 0};
+        let centralStar, planets = [], orbitLines = [];
+        let backgroundStars = [];
+        let timeScale = 1.0;
         let clock = new THREE.Clock();
-        let audioSource = null, isAudioPlaying = false;
+        let audioSource = null, audioElement = null, gainNode = null;
         let mouseDown = false, mouseX = 0, mouseY = 0;
-        let cameraRotation = {x: 0, y: 0};
-        let cameraPosition = new THREE.Vector3(0, 50, 150);
+        let cameraRotation = {x: 0.3, y: 0};
+        let cameraPosition = new THREE.Vector3(0, 80, 200);
         let cameraVelocity = new THREE.Vector3();
         let keys = {};
-        let currentSeed = Math.random().toString(36).substr(2, 9);
-        let starfield, nebulae = [], dustParticles;
-        let infiniteStars = new Map();
-        let lastCameraChunk = {x: 0, y: 0, z: 0};
-        const CHUNK_SIZE = 500;
-        const RENDER_DISTANCE = 3;
+        let ambientOscillators = [];
+        let currentSystem = null;
 
-        // === ИНИЦИАЛИЗАЦИЯ ===
+        const STAR_TYPES = {
+            'O': {color: 0x9bb0ff, temp: 30000, size: 10, freq: [6000, 20000]},
+            'B': {color: 0xaabfff, temp: 18000, size: 8, freq: [4000, 10000]},
+            'A': {color: 0xcad7ff, temp: 8500, size: 6, freq: [2000, 6000]},
+            'G': {color: 0xfff4ea, temp: 5800, size: 5, freq: [500, 2000]},
+            'K': {color: 0xffd2a1, temp: 4500, size: 4, freq: [250, 500]},
+            'M': {color: 0xffcc6f, temp: 3000, size: 3.5, freq: [60, 250]}
+        };
+
+        const PLANET_TYPES = [
+            {type: 'Rocky', colors: [0x8b7355, 0x6b5345], size: [1, 2.5]},
+            {type: 'Gas Giant', colors: [0xd4a574, 0xc49464], size: [3.5, 7]},
+            {type: 'Ice Giant', colors: [0x4fc3f7, 0x3fb3e7], size: [3, 5]},
+            {type: 'Lava World', colors: [0xff4500, 0xff6a00], size: [0.8, 2]},
+            {type: 'Ocean', colors: [0x006994, 0x005984], size: [1.2, 3]}
+        ];
+
         function init() {
             scene = new THREE.Scene();
-            scene.fog = new THREE.FogExp2(0x000511, 0.0003);
+            scene.fog = new THREE.FogExp2(0x000208, 0.00005);
             
-            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 5000);
+            camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 5000);
             renderer = new THREE.WebGLRenderer({
                 canvas: document.getElementById('canvas'),
                 antialias: true,
                 alpha: true
             });
             renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.setPixelRatio(window.devicePixelRatio);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
             
             camera.position.copy(cameraPosition);
 
-            // Освещение
             const ambientLight = new THREE.AmbientLight(0x1a2344, 0.4);
             scene.add(ambientLight);
 
-            // Фон - бесконечное звездное поле
-            createInfiniteStarfield();
-            
-            // Частицы космической пыли
-            createCosmicDust();
-            
-            // Туманности
-            createNebulae();
-
-            // Аудио
+            createBackgroundStars();
+            generateNewSystem();
             setupAudio();
-
-            // Генерация первой системы
-            generateStarSystem();
-
-            // События
             setupEvents();
 
-            // Запуск
             setTimeout(() => {
                 document.getElementById('loading').style.opacity = '0';
                 document.getElementById('loading').style.transition = 'opacity 1s';
                 setTimeout(() => {
                     document.getElementById('loading').style.display = 'none';
                 }, 1000);
-            }, 2000);
+            }, 1500);
             
             animate();
         }
 
-        // === БЕСКОНЕЧНОЕ ЗВЕЗДНОЕ ПОЛЕ ===
-        function createInfiniteStarfield() {
-            const geometry = new THREE.BufferGeometry();
-            const vertices = [];
-            const colors = [];
-            const sizes = [];
-            
-            for (let i = 0; i < 10000; i++) {
-                vertices.push(
-                    (Math.random() - 0.5) * 3000,
-                    (Math.random() - 0.5) * 3000,
-                    (Math.random() - 0.5) * 3000
-                );
-                
-                const color = new THREE.Color();
-                const temp = Math.random();
-                if (temp < 0.2) color.setHex(0x9bb0ff); // Голубые
-                else if (temp < 0.4) color.setHex(0xaabfff); // Бело-голубые
-                else if (temp < 0.6) color.setHex(0xfff4ea); // Желтые
-                else if (temp < 0.8) color.setHex(0xffd2a1); // Оранжевые
-                else color.setHex(0xffcc6f); // Красные
-                
-                colors.push(color.r, color.g, color.b);
-                sizes.push(Math.random() * 2 + 0.5);
-            }
-            
-            geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
-            geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
-            geometry.setAttribute('size', new THREE.Float32BufferAttribute(sizes, 1));
-            
-            const material = new THREE.ShaderMaterial({
-                uniforms: {
-                    time: { value: 0 }
-                },
-                vertexShader: `
-                    attribute float size;
-                    attribute vec3 color;
-                    varying vec3 vColor;
-                    varying float vAlpha;
-                    uniform float time;
-                    
-                    void main() {
-                        vColor = color;
-                        vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
-                        
-                        // Мерцание
-                        float flicker = sin(time * 2.0 + position.x * 0.01) * 0.3 + 0.7;
-                        vAlpha = flicker;
-                        
-                        gl_PointSize = size * (300.0 / -mvPosition.z) * flicker;
-                        gl_Position = projectionMatrix * mvPosition;
-                    }
-                `,
-                fragmentShader: `
-                    varying vec3 vColor;
-                    varying float vAlpha;
-                    
-                    void main() {
-                        float dist = length(gl_PointCoord - vec2(0.5));
-                        if (dist > 0.5) discard;
-                        
-                        float alpha = (1.0 - dist * 2.0) * vAlpha;
-                        gl_FragColor = vec4(vColor, alpha);
-                    }
-                `,
-                transparent: true,
-                vertexColors: true,
-                blending: THREE.AdditiveBlending,
-                depthWrite: false
-            });
-            
-            starfield = new THREE.Points(geometry, material);
-            scene.add(starfield);
-        }
-
-        // === КОСМИЧЕСКАЯ ПЫЛЬ ===
-        function createCosmicDust() {
-            const geometry = new THREE.BufferGeometry();
-            const vertices = [];
-            
+        function createBackgroundStars() {
             for (let i = 0; i < 3000; i++) {
-                vertices.push(
-                    (Math.random() - 0.5) * 2000,
-                    (Math.random() - 0.5) * 2000,
-                    (Math.random() - 0.5) * 2000
-                );
-            }
-            
-            geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
-            
-            const material = new THREE.PointsMaterial({
-                color: 0x6699ff,
-                size: 0.3,
-                transparent: true,
-                opacity: 0.3,
-                blending: THREE.AdditiveBlending
-            });
-            
-            dustParticles = new THREE.Points(geometry, material);
-            scene.add(dustParticles);
-        }
+                const theta = Math.random() * Math.PI * 2;
+                const phi = Math.random() * Math.PI;
+                const radius = 1500 + Math.random() * 2000;
+                
+                const x = Math.sin(phi) * Math.cos(theta) * radius;
+                const y = Math.sin(phi) * Math.sin(theta) * radius;
+                const z = Math.cos(phi) * radius;
 
-        // === ТУМАННОСТИ ===
-        function createNebulae() {
-            for (let i = 0; i < 3; i++) {
-                const geometry = new THREE.SphereGeometry(150, 32, 32);
-                const material = new THREE.ShaderMaterial({
-                    uniforms: {
-                        time: { value: 0 },
-                        color1: { value: new THREE.Color(0x1a4d7a) },
-                        color2: { value: new THREE.Color(0x7a1a4d) }
-                    },
-                    vertexShader: `
-                        varying vec3 vNormal;
-                        varying vec3 vPosition;
-                        void main() {
-                            vNormal = normalize(normalMatrix * normal);
-                            vPosition = position;
-                            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-                        }
-                    `,
-                    fragmentShader: `
-                        uniform float time;
-                        uniform vec3 color1;
-                        uniform vec3 color2;
-                        varying vec3 vNormal;
-                        varying vec3 vPosition;
-                        
-                        void main() {
-                            float noise = sin(vPosition.x * 0.01 + time) * 
-                                         cos(vPosition.y * 0.01 + time) * 
-                                         sin(vPosition.z * 0.01 + time);
-                            vec3 color = mix(color1, color2, noise * 0.5 + 0.5);
-                            float alpha = 0.1 + abs(noise) * 0.1;
-                            gl_FragColor = vec4(color, alpha);
-                        }
-                    `,
+                const starTypes = Object.values(STAR_TYPES);
+                const starType = starTypes[Math.floor(Math.random() * starTypes.length)];
+                
+                const geometry = new THREE.SphereGeometry(0.5 + Math.random() * 1, 8, 8);
+                const material = new THREE.MeshBasicMaterial({
+                    color: starType.color,
                     transparent: true,
-                    side: THREE.BackSide,
-                    blending: THREE.AdditiveBlending,
-                    depthWrite: false
+                    opacity: 0.4 + Math.random() * 0.3
                 });
                 
-                const nebula = new THREE.Mesh(geometry, material);
-                nebula.position.set(
-                    (Math.random() - 0.5) * 800,
-                    (Math.random() - 0.5) * 400,
-                    (Math.random() - 0.5) * 800
-                );
-                scene.add(nebula);
-                nebulae.push(nebula);
+                const star = new THREE.Mesh(geometry, material);
+                star.position.set(x, y, z);
+                scene.add(star);
+                
+                backgroundStars.push({
+                    mesh: star,
+                    baseOpacity: material.opacity,
+                    freqRange: starType.freq,
+                    material: material
+                });
             }
         }
 
-        // === ГЕНЕРАЦИЯ ЗВЕЗДНОЙ СИСТЕМЫ ===
-        function generateStarSystem() {
-            stars.forEach(s => {
-                scene.remove(s.mesh);
-                scene.remove(s.coronaRays);
-            });
-            planets.forEach(p => scene.remove(p.mesh));
-            stars = [];
+        function generateNewSystem() {
+            if (centralStar) {
+                scene.remove(centralStar.mesh);
+                planets.forEach(p => {
+                    scene.remove(p.mesh);
+                    if (p.trail) scene.remove(p.trail);
+                });
+                orbitLines.forEach(l => scene.remove(l));
+            }
+
             planets = [];
+            orbitLines = [];
 
-            const starTypes = [
-                {class: 'O', color: 0x9bb0ff, temp: 30000, size: 15, freq: [6000, 20000]},
-                {class: 'B', color: 0xaabfff, temp: 18000, size: 10, freq: [4000, 10000]},
-                {class: 'A', color: 0xcad7ff, temp: 8500, size: 7, freq: [2000, 6000]},
-                {class: 'G', color: 0xfff4ea, temp: 5800, size: 5, freq: [500, 2000]},
-                {class: 'K', color: 0xffd2a1, temp: 4500, size: 4, freq: [250, 500]},
-                {class: 'M', color: 0xffcc6f, temp: 3000, size: 3, freq: [60, 250]}
-            ];
+            const starTypeKey = 'G';
+            const starType = STAR_TYPES[starTypeKey];
+            
+            createCentralStar(starType, starTypeKey);
+            
+            const numPlanets = 3 + Math.floor(Math.random() * 7);
+            for (let i = 0; i < numPlanets; i++) {
+                createPlanet(i);
+            }
 
-            let starType = starTypes[Math.floor(Math.random() * starTypes.length)];
+            currentSystem = {
+                starType: starTypeKey,
+                planets: planets.map(p => ({
+                    type: p.planetType,
+                    size: p.size,
+                    orbitRadius: p.orbit.radius,
+                    orbitSpeed: p.orbit.speed
+                }))
+            };
 
-            // Звезда
+            updateSystemInfo();
+        }
+
+        function createCentralStar(starType, typeKey) {
             const starGeometry = new THREE.SphereGeometry(starType.size, 64, 64);
             const starMaterial = new THREE.ShaderMaterial({
                 uniforms: {
@@ -721,11 +612,10 @@
                     void main() {
                         vNormal = normalize(normalMatrix * normal);
                         vPosition = position;
-                        
                         vec3 pos = position;
-                        float displacement = sin(pos.x * 0.5 + time) * cos(pos.y * 0.5 + time) * 0.3;
+                        float displacement = sin(pos.x * 0.5 + time) * 
+                                           cos(pos.y * 0.5 + time) * 0.2;
                         pos += normal * displacement;
-                        
                         gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
                     }
                 `,
@@ -737,21 +627,19 @@
                     varying vec3 vPosition;
                     
                     void main() {
-                        float fresnel = pow(1.0 - abs(dot(vNormal, vec3(0.0, 0.0, 1.0))), 2.0);
-                        float pulse = sin(time * 2.0) * 0.1 + 0.9;
-                        vec3 glow = baseColor * (intensity * pulse + fresnel * 0.5);
+                        float fresnel = pow(1.0 - abs(dot(vNormal, vec3(0.0, 0.0, 1.0))), 1.8);
+                        float pulse = sin(time * 1.5) * 0.1 + 0.9;
+                        vec3 glow = baseColor * (intensity * pulse + fresnel * 0.6);
                         gl_FragColor = vec4(glow, 1.0);
                     }
-                `,
-                side: THREE.FrontSide
+                `
             });
             
             const starMesh = new THREE.Mesh(starGeometry, starMaterial);
             scene.add(starMesh);
 
-            // Корональные лучи
-            const raysGeometry = new THREE.SphereGeometry(starType.size * 2, 32, 32);
-            const raysMaterial = new THREE.ShaderMaterial({
+            const glowGeometry = new THREE.SphereGeometry(starType.size * 2.5, 32, 32);
+            const glowMaterial = new THREE.ShaderMaterial({
                 uniforms: {
                     time: { value: 0 },
                     color: { value: new THREE.Color(starType.color) }
@@ -769,8 +657,8 @@
                     varying vec3 vNormal;
                     
                     void main() {
-                        float intensity = pow(0.7 - dot(vNormal, vec3(0.0, 0.0, 1.0)), 3.0);
-                        float pulse = sin(time) * 0.2 + 0.8;
+                        float intensity = pow(0.7 - dot(vNormal, vec3(0.0, 0.0, 1.0)), 2.8);
+                        float pulse = sin(time * 1.2) * 0.15 + 0.85;
                         gl_FragColor = vec4(color, intensity * 0.4 * pulse);
                     }
                 `,
@@ -780,74 +668,94 @@
                 depthWrite: false
             });
             
-            const coronaRays = new THREE.Mesh(raysGeometry, raysMaterial);
-            scene.add(coronaRays);
+            const glow = new THREE.Mesh(glowGeometry, glowMaterial);
+            starMesh.add(glow);
 
-            // Точечный свет от звезды
-            const pointLight = new THREE.PointLight(starType.color, 2, 300);
+            const pointLight = new THREE.PointLight(starType.color, 2, 400);
             starMesh.add(pointLight);
 
-            const starName = generateStarName();
-            stars.push({
+            centralStar = {
                 mesh: starMesh,
-                coronaRays: coronaRays,
                 type: starType,
-                name: starName,
-                baseSize: starType.size,
-                freqRange: starType.freq,
+                typeKey: typeKey,
                 material: starMaterial,
-                raysMaterial: raysMaterial
-            });
-
-            // Планеты
-            const numPlanets = musicMode === 'symphonic' ? 8 + Math.floor(Math.random() * 5) : 3 + Math.floor(Math.random() * 6);
-            for (let i = 0; i < numPlanets; i++) {
-                generatePlanet(i, starType);
-            }
-
-            stats.systems++;
-            stats.stars++;
-            updateStats();
+                glowMaterial: glowMaterial
+            };
         }
 
-        // === ГЕНЕРАЦИЯ ПЛАНЕТЫ ===
-        function generatePlanet(index, starType) {
-            const planetTypes = [
-                {type: 'Rocky', colors: [0x8b7355, 0x6b5345], size: [0.8, 2], glow: false},
-                {type: 'Gas Giant', colors: [0xd4a574, 0xc49464], size: [3, 6], glow: true},
-                {type: 'Ice Giant', colors: [0x4fc3f7, 0x3fb3e7], size: [2.5, 4], glow: true},
-                {type: 'Lava World', colors: [0xff4500, 0xff6a00], size: [0.7, 1.5], glow: true},
-                {type: 'Ocean', colors: [0x006994, 0x005984], size: [0.9, 2.2], glow: false},
-                {type: 'Crystalline', colors: [0xaa00ff, 0xcc44ff], size: [1, 2], glow: true}
-            ];
-
-            const planetType = planetTypes[Math.floor(Math.random() * planetTypes.length)];
+        function createPlanet(index) {
+            const planetType = PLANET_TYPES[Math.floor(Math.random() * PLANET_TYPES.length)];
             const size = planetType.size[0] + Math.random() * (planetType.size[1] - planetType.size[0]);
             
             const planetGeometry = new THREE.SphereGeometry(size, 32, 32);
             const planetMaterial = new THREE.MeshStandardMaterial({
                 color: planetType.colors[0],
                 roughness: 0.8,
-                metalness: planetType.type === 'Crystalline' ? 0.9 : 0.2,
-                emissive: planetType.glow ? planetType.colors[1] : 0x000000,
-                emissiveIntensity: planetType.glow ? 0.3 : 0
+                metalness: 0.2,
+                emissive: planetType.type === 'Lava World' ? planetType.colors[1] : 0x000000,
+                emissiveIntensity: planetType.type === 'Lava World' ? 0.5 : 0
             });
             const planetMesh = new THREE.Mesh(planetGeometry, planetMaterial);
 
-            const orbitRadius = 20 + index * 15 + Math.random() * 10;
-            const orbitSpeed = (0.001 / (orbitRadius * 0.1));
+            const orbitRadius = 25 + index * 18 + Math.random() * 10;
+            const orbitSpeed = 0.0015 / Math.sqrt(orbitRadius * 0.15);
             const orbitAngle = Math.random() * Math.PI * 2;
-            const orbitInclination = (Math.random() - 0.5) * 0.3;
             
             planetMesh.position.x = Math.cos(orbitAngle) * orbitRadius;
             planetMesh.position.z = Math.sin(orbitAngle) * orbitRadius;
-            planetMesh.position.y = Math.sin(orbitInclination) * orbitRadius * 0.2;
+            planetMesh.position.y = 0;
 
             scene.add(planetMesh);
 
-            // Атмосфера с свечением
-            if (planetType.glow) {
-                const atmGeometry = new THREE.SphereGeometry(size * 1.15, 32, 32);
+            // Orbit trail
+            const trailPoints = [];
+            const segments = 128;
+            for (let i = 0; i <= segments; i++) {
+                const angle = (i / segments) * Math.PI * 2;
+                trailPoints.push(new THREE.Vector3(
+                    Math.cos(angle) * orbitRadius,
+                    0,
+                    Math.sin(angle) * orbitRadius
+                ));
+            }
+            
+            const trailGeometry = new THREE.BufferGeometry().setFromPoints(trailPoints);
+            const trailMaterial = new THREE.ShaderMaterial({
+                uniforms: {
+                    color: { value: new THREE.Color(planetType.colors[0]) },
+                    audioIntensity: { value: 0.0 }
+                },
+                vertexShader: `
+                    varying float vProgress;
+                    uniform float audioIntensity;
+                    
+                    void main() {
+                        vProgress = position.x;
+                        vec3 pos = position;
+                        pos.y += sin(position.x * 0.1 + position.z * 0.1) * audioIntensity * 3.0;
+                        gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
+                    }
+                `,
+                fragmentShader: `
+                    uniform vec3 color;
+                    uniform float audioIntensity;
+                    varying float vProgress;
+                    
+                    void main() {
+                        float alpha = 0.3 + audioIntensity * 0.4;
+                        gl_FragColor = vec4(color, alpha);
+                    }
+                `,
+                transparent: true,
+                blending: THREE.AdditiveBlending
+            });
+            
+            const trail = new THREE.Line(trailGeometry, trailMaterial);
+            scene.add(trail);
+
+            // Atmosphere
+            if (planetType.type !== 'Rocky' && planetType.type !== 'Lava World') {
+                const atmGeometry = new THREE.SphereGeometry(size * 1.15, 24, 24);
                 const atmMaterial = new THREE.ShaderMaterial({
                     uniforms: {
                         color: { value: new THREE.Color(planetType.colors[0]) }
@@ -863,7 +771,7 @@
                         uniform vec3 color;
                         varying vec3 vNormal;
                         void main() {
-                            float intensity = pow(0.6 - dot(vNormal, vec3(0.0, 0.0, 1.0)), 2.0);
+                            float intensity = pow(0.5 - dot(vNormal, vec3(0.0, 0.0, 1.0)), 2.0);
                             gl_FragColor = vec4(color, intensity * 0.5);
                         }
                     `,
@@ -875,68 +783,51 @@
                 planetMesh.add(atmosphere);
             }
 
-            // Кольца
-            if (planetType.type === 'Gas Giant' && Math.random() > 0.5) {
-                const ringGeometry = new THREE.RingGeometry(size * 1.5, size * 2.5, 64);
-                const ringMaterial = new THREE.MeshBasicMaterial({
-                    color: 0xccaa88,
-                    side: THREE.DoubleSide,
-                    transparent: true,
-                    opacity: 0.6
-                });
-                const ring = new THREE.Mesh(ringGeometry, ringMaterial);
-                ring.rotation.x = Math.PI / 2;
-                planetMesh.add(ring);
-            }
-
-            const planetName = generatePlanetName(index);
             planets.push({
                 mesh: planetMesh,
-                type: planetType.type,
-                name: planetName,
-                orbit: {radius: orbitRadius, speed: orbitSpeed, angle: orbitAngle, inclination: orbitInclination},
+                planetType: planetType.type,
                 size: size,
-                baseY: planetMesh.position.y
+                orbit: {radius: orbitRadius, speed: orbitSpeed, angle: orbitAngle},
+                baseY: 0,
+                trail: trail,
+                trailMaterial: trailMaterial
             });
         }
 
-        // === ГЕНЕРАЦИЯ ИМЕН ===
-        function generateStarName() {
-            const prefixes = ['Alpha', 'Beta', 'Gamma', 'Delta', 'Epsilon', 'Zeta', 'Sigma', 'Omega'];
-            const suffixes = ['Centauri', 'Draconis', 'Phoenicis', 'Aquilae', 'Lyrae', 'Orionis', 'Cygni'];
-            return `${prefixes[Math.floor(Math.random() * prefixes.length)]} ${suffixes[Math.floor(Math.random() * suffixes.length)]}`;
-        }
-
-        function generatePlanetName(index) {
-            const letters = ['b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k'];
-            return `${stars[0].name} ${letters[index]}`;
-        }
-
-        // === АУДИО ===
         function setupAudio() {
             audioContext = new (window.AudioContext || window.webkitAudioContext)();
             analyser = audioContext.createAnalyser();
             analyser.fftSize = 2048;
-            analyser.smoothingTimeConstant = 0.8;
+            analyser.smoothingTimeConstant = 0.85;
             dataArray = new Uint8Array(analyser.frequencyBinCount);
-            analyser.connect(audioContext.destination);
+            
+            gainNode = audioContext.createGain();
+            gainNode.gain.value = 0.5;
+            gainNode.connect(audioContext.destination);
 
             document.getElementById('audioFile').addEventListener('change', function(e) {
                 const file = e.target.files[0];
                 if (file) {
-                    const reader = new FileReader();
-                    reader.onload = function(event) {
-                        audioContext.decodeAudioData(event.target.result, function(buffer) {
-                            if (audioSource) audioSource.stop();
-                            audioSource = audioContext.createBufferSource();
-                            audioSource.buffer = buffer;
-                            audioSource.connect(analyser);
-                            audioSource.loop = true;
-                            audioSource.start(0);
-                            isAudioPlaying = true;
-                        });
-                    };
-                    reader.readAsArrayBuffer(file);
+                    if (audioElement) {
+                        audioElement.pause();
+                        audioElement = null;
+                    }
+                    
+                    audioElement = new Audio();
+                    audioElement.src = URL.createObjectURL(file);
+                    audioElement.loop = true;
+                    
+                    if (audioSource) {
+                        audioSource.disconnect();
+                    }
+                    
+                    audioSource = audioContext.createMediaElementSource(audioElement);
+                    audioSource.connect(analyser);
+                    analyser.connect(gainNode);
+                    
+                    audioElement.play().then(() => {
+                        document.getElementById('audioBtn').textContent = 'Pause';
+                    });
                 }
             });
         }
@@ -944,89 +835,156 @@
         function startMicrophone() {
             navigator.mediaDevices.getUserMedia({audio: true})
                 .then(stream => {
-                    if (audioSource) audioSource.stop();
+                    if (audioElement) {
+                        audioElement.pause();
+                        audioElement = null;
+                    }
+                    if (audioSource) {
+                        audioSource.disconnect();
+                    }
+                    
                     audioSource = audioContext.createMediaStreamSource(stream);
                     audioSource.connect(analyser);
-                    isAudioPlaying = true;
-                })
-                .catch(err => alert('Микрофон недоступен'));
+                    analyser.connect(gainNode);
+                    
+                    document.getElementById('audioBtn').textContent = 'Stop';
+                });
         }
 
         function generateAmbient() {
-            if (audioSource && audioSource.stop) audioSource.stop();
+            if (audioElement) {
+                audioElement.pause();
+                audioElement = null;
+            }
             
-            const osc1 = audioContext.createOscillator();
-            const osc2 = audioContext.createOscillator();
-            const gainNode = audioContext.createGain();
+            ambientOscillators.forEach(osc => {
+                if (osc.stop) osc.stop();
+            });
+            ambientOscillators = [];
+            
             const filter = audioContext.createBiquadFilter();
-            
-            osc1.type = 'sine';
-            osc2.type = 'triangle';
-            osc1.frequency.value = 110;
-            osc2.frequency.value = 220;
             filter.type = 'lowpass';
-            filter.frequency.value = 800;
-            gainNode.gain.value = 0.2;
+            filter.frequency.value = 1500;
+            filter.Q.value = 0.8;
             
-            osc1.connect(filter);
-            osc2.connect(filter);
-            filter.connect(gainNode);
-            gainNode.connect(analyser);
+            const reverb = audioContext.createConvolver();
+            const reverbTime = 5;
+            const sampleRate = audioContext.sampleRate;
+            const length = sampleRate * reverbTime;
+            const impulse = audioContext.createBuffer(2, length, sampleRate);
             
-            osc1.start();
-            osc2.start();
-            audioSource = {osc1, osc2, stop: () => { osc1.stop(); osc2.stop(); }};
-            isAudioPlaying = true;
-
-            setInterval(() => {
-                if (audioSource.osc1) {
-                    osc1.frequency.value = 80 + Math.random() * 200;
-                    osc2.frequency.value = 150 + Math.random() * 300;
+            for (let channel = 0; channel < 2; channel++) {
+                const channelData = impulse.getChannelData(channel);
+                for (let i = 0; i < length; i++) {
+                    channelData[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / length, 3);
                 }
-            }, 4000);
+            }
+            reverb.buffer = impulse;
+            
+            const frequencies = [40, 60, 90, 120, 180, 240, 360];
+            
+            frequencies.forEach((freq, i) => {
+                const osc = audioContext.createOscillator();
+                const oscGain = audioContext.createGain();
+                const lfo = audioContext.createOscillator();
+                const lfoGain = audioContext.createGain();
+                
+                osc.type = ['sine', 'triangle', 'sawtooth'][i % 3];
+                osc.frequency.value = freq;
+                oscGain.gain.value = 0.2 / frequencies.length;
+                
+                lfo.type = 'sine';
+                lfo.frequency.value = 0.03 + Math.random() * 0.12;
+                lfoGain.gain.value = freq * 0.04;
+                
+                lfo.connect(lfoGain);
+                lfoGain.connect(osc.frequency);
+                
+                osc.connect(oscGain);
+                oscGain.connect(filter);
+                
+                lfo.start();
+                osc.start();
+                ambientOscillators.push(osc, lfo);
+                
+                setInterval(() => {
+                    if (ambientOscillators.includes(osc)) {
+                        const newFreq = freq * (0.9 + Math.random() * 0.2);
+                        osc.frequency.exponentialRampToValueAtTime(newFreq, audioContext.currentTime + 8);
+                    }
+                }, 8000 + Math.random() * 5000);
+            });
+            
+            filter.connect(reverb);
+            reverb.connect(analyser);
+            analyser.connect(gainNode);
+            
+            document.getElementById('audioBtn').textContent = 'Stop';
         }
 
         function toggleAudio() {
-            if (audioContext.state === 'running') {
-                audioContext.suspend();
-            } else {
-                audioContext.resume();
+            if (audioElement) {
+                if (audioElement.paused) {
+                    audioElement.play();
+                    document.getElementById('audioBtn').textContent = 'Pause';
+                } else {
+                    audioElement.pause();
+                    document.getElementById('audioBtn').textContent = 'Play';
+                }
+            } else if (ambientOscillators.length > 0) {
+                ambientOscillators.forEach(osc => osc.stop());
+                ambientOscillators = [];
+                document.getElementById('audioBtn').textContent = 'Play';
             }
         }
 
-        // === ОБРАБОТКА АУДИО ===
+        function changeVolume(value) {
+            const volume = parseFloat(value) / 100;
+            if (gainNode) {
+                gainNode.gain.value = volume;
+            }
+            document.getElementById('volumeDisplay').textContent = value;
+        }
+
         function processAudio() {
             if (!analyser) return;
             
             analyser.getByteFrequencyData(dataArray);
 
-            const bass = getAverageFrequency(0, 250, dataArray) / 255;
-            const mid = getAverageFrequency(250, 2000, dataArray) / 255;
-            const high = getAverageFrequency(2000, 20000, dataArray) / 255;
+            const bass = getAverageFrequency(0, 250) / 255;
+            const mid = getAverageFrequency(250, 2000) / 255;
+            const high = getAverageFrequency(2000, 20000) / 255;
 
-            // Мерцание звезд
-            stars.forEach(star => {
-                const freqValue = (bass + mid + high) / 3;
-                star.material.uniforms.intensity.value = 0.8 + freqValue * 0.4;
-                star.raysMaterial.uniforms.time.value += 0.01;
+            // Central star
+            if (centralStar) {
+                const freqValue = (bass * 0.4 + mid * 0.3 + high * 0.3);
+                centralStar.material.uniforms.intensity.value = 0.85 + freqValue * 0.4;
+                const targetScale = 1 + freqValue * 0.12;
+                centralStar.mesh.scale.lerp(new THREE.Vector3(targetScale, targetScale, targetScale), 0.1);
+            }
+
+            // Planets and trails
+            planets.forEach(planet => {
+                const targetY = planet.baseY + bass * 4;
+                planet.mesh.position.y += (targetY - planet.mesh.position.y) * 0.08;
+                planet.mesh.rotation.y += 0.005 * (1 + mid * 0.5);
                 
-                // Плавная пульсация
-                const targetScale = 1 + freqValue * 0.15;
-                star.mesh.scale.lerp(new THREE.Vector3(targetScale, targetScale, targetScale), 0.1);
-                star.coronaRays.scale.copy(star.mesh.scale);
+                if (planet.trailMaterial) {
+                    planet.trailMaterial.uniforms.audioIntensity.value = bass * 0.5 + mid * 0.3;
+                }
             });
 
-            // Реакция планет
-            planets.forEach(planet => {
-                const targetY = planet.baseY + bass * 3;
-                planet.mesh.position.y += (targetY - planet.mesh.position.y) * 0.1;
-                planet.mesh.rotation.y += 0.005 * (1 + mid);
+            // Background stars
+            backgroundStars.forEach(star => {
+                const freqValue = getFrequencyForRange(star.freqRange[0], star.freqRange[1]) / 255;
+                const targetOpacity = star.baseOpacity + freqValue * 0.5;
+                star.material.opacity += (targetOpacity - star.material.opacity) * 0.15;
             });
 
             drawSpectrum(dataArray);
         }
 
-        function getAverageFrequency(startFreq, endFreq, dataArray) {
+        function getAverageFrequency(startFreq, endFreq) {
             const nyquist = audioContext.sampleRate / 2;
             const startBin = Math.floor(startFreq / nyquist * dataArray.length);
             const endBin = Math.floor(endFreq / nyquist * dataArray.length);
@@ -1038,7 +996,10 @@
             return sum / (endBin - startBin);
         }
 
-        // === СПЕКТРОГРАММА ===
+        function getFrequencyForRange(startFreq, endFreq) {
+            return getAverageFrequency(startFreq, endFreq);
+        }
+
         function drawSpectrum(dataArray) {
             const canvas = document.getElementById('spectrumCanvas');
             const ctx = canvas.getContext('2d');
@@ -1046,8 +1007,8 @@
             canvas.height = canvas.offsetHeight;
 
             const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-            gradient.addColorStop(0, 'rgba(100, 200, 255, 0.1)');
-            gradient.addColorStop(1, 'rgba(150, 100, 255, 0.1)');
+            gradient.addColorStop(0, 'rgba(100, 200, 255, 0.02)');
+            gradient.addColorStop(1, 'rgba(150, 100, 255, 0.02)');
             ctx.fillStyle = gradient;
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -1057,247 +1018,100 @@
                 const barHeight = (dataArray[i] / 255) * canvas.height * 0.9;
                 const hue = 200 + (i / (dataArray.length / 2)) * 60;
                 const gradient = ctx.createLinearGradient(0, canvas.height - barHeight, 0, canvas.height);
-                gradient.addColorStop(0, `hsla(${hue}, 80%, 60%, 0.9)`);
-                gradient.addColorStop(1, `hsla(${hue}, 80%, 40%, 0.4)`);
+                gradient.addColorStop(0, `hsla(${hue}, 80%, 65%, 0.95)`);
+                gradient.addColorStop(0.5, `hsla(${hue}, 80%, 50%, 0.7)`);
+                gradient.addColorStop(1, `hsla(${hue}, 80%, 35%, 0.3)`);
                 ctx.fillStyle = gradient;
-                ctx.fillRect(i * barWidth, canvas.height - barHeight, barWidth - 1, barHeight);
+                
+                const x = i * barWidth;
+                ctx.beginPath();
+                ctx.moveTo(x, canvas.height);
+                ctx.lineTo(x, canvas.height - barHeight);
+                ctx.lineTo(x + barWidth - 1, canvas.height - barHeight);
+                ctx.lineTo(x + barWidth - 1, canvas.height);
+                ctx.closePath();
+                ctx.fill();
+                
+                // Glow effect
+                if (barHeight > canvas.height * 0.3) {
+                    ctx.shadowBlur = 15;
+                    ctx.shadowColor = `hsla(${hue}, 80%, 60%, 0.8)`;
+                    ctx.fill();
+                    ctx.shadowBlur = 0;
+                }
             }
         }
 
-        // === МИНИКАРТА ===
-        function drawMinimap() {
-            const canvas = document.getElementById('minimapCanvas');
-            const ctx = canvas.getContext('2d');
-            canvas.width = canvas.offsetWidth;
-            canvas.height = canvas.offsetHeight;
-
-            const gradient = ctx.createRadialGradient(canvas.width/2, canvas.height/2, 0, canvas.width/2, canvas.height/2, canvas.width/2);
-            gradient.addColorStop(0, 'rgba(10, 20, 50, 0.9)');
-            gradient.addColorStop(1, 'rgba(5, 10, 30, 0.95)');
-            ctx.fillStyle = gradient;
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            const centerX = canvas.width / 2;
-            const centerY = canvas.height / 2;
-            const scale = 0.6;
-
-            // Звезда
-            const starGrad = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, 8);
-            starGrad.addColorStop(0, 'rgba(255, 255, 100, 1)');
-            starGrad.addColorStop(1, 'rgba(255, 200, 100, 0)');
-            ctx.fillStyle = starGrad;
-            ctx.beginPath();
-            ctx.arc(centerX, centerY, 8, 0, Math.PI * 2);
-            ctx.fill();
-
-            // Планеты с орбитами
-            planets.forEach(planet => {
-                const x = centerX + planet.mesh.position.x * scale;
-                const y = centerY + planet.mesh.position.z * scale;
-                
-                // Орбита
-                ctx.strokeStyle = 'rgba(100, 200, 255, 0.2)';
-                ctx.lineWidth = 1;
-                ctx.beginPath();
-                ctx.arc(centerX, centerY, planet.orbit.radius * scale, 0, Math.PI * 2);
-                ctx.stroke();
-                
-                // Планета
-                const planetGrad = ctx.createRadialGradient(x, y, 0, x, y, 3);
-                planetGrad.addColorStop(0, 'rgba(100, 200, 255, 1)');
-                planetGrad.addColorStop(1, 'rgba(100, 200, 255, 0)');
-                ctx.fillStyle = planetGrad;
-                ctx.beginPath();
-                ctx.arc(x, y, 3, 0, Math.PI * 2);
-                ctx.fill();
-            });
-
-            // Камера
-            const camGrad = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, 5);
-            camGrad.addColorStop(0, 'rgba(0, 255, 100, 1)');
-            camGrad.addColorStop(1, 'rgba(0, 255, 100, 0)');
-            ctx.fillStyle = camGrad;
-            const camX = centerX + camera.position.x * scale * 0.1;
-            const camY = centerY + camera.position.z * scale * 0.1;
-            ctx.beginPath();
-            ctx.arc(camX, camY, 4, 0, Math.PI * 2);
-            ctx.fill();
-        }
-
-        // === СОБЫТИЯ ===
         function setupEvents() {
-            window.addEventListener('resize', onResize);
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
             
             const canvas = document.getElementById('canvas');
-            canvas.addEventListener('mousedown', onMouseDown);
-            canvas.addEventListener('mousemove', onMouseMove);
-            canvas.addEventListener('mouseup', onMouseUp);
-            canvas.addEventListener('wheel', onWheel);
-            canvas.addEventListener('click', onClick);
-            
-            window.addEventListener('keydown', e => {
-                keys[e.key] = true;
-                if (e.key === ' ') toggleAudio();
+            canvas.addEventListener('mousedown', e => {
+                mouseDown = true;
+                mouseX = e.clientX;
+                mouseY = e.clientY;
             });
+            
+            canvas.addEventListener('mousemove', e => {
+                if (!mouseDown) return;
+                
+                const deltaX = e.clientX - mouseX;
+                const deltaY = e.clientY - mouseY;
+                
+                cameraRotation.y -= deltaX * 0.004;
+                cameraRotation.x -= deltaY * 0.004;
+                cameraRotation.x = Math.max(-Math.PI/2, Math.min(Math.PI/2, cameraRotation.x));
+                
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+            });
+            
+            canvas.addEventListener('mouseup', () => mouseDown = false);
+            
+            canvas.addEventListener('wheel', e => {
+                e.preventDefault();
+                const delta = e.deltaY * 0.001;
+                cameraVelocity.z += delta * 5;
+            });
+            
+            window.addEventListener('keydown', e => keys[e.key] = true);
             window.addEventListener('keyup', e => keys[e.key] = false);
         }
 
-        function onResize() {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        }
-
-        function onMouseDown(e) {
-            mouseDown = true;
-            mouseX = e.clientX;
-            mouseY = e.clientY;
-        }
-
-        function onMouseMove(e) {
-            if (!mouseDown || cameraMode !== 'free') return;
+        function handleCameraMovement() {
+            const speed = (keys['Shift'] ? 4 : 1.8) * timeScale;
             
-            const deltaX = e.clientX - mouseX;
-            const deltaY = e.clientY - mouseY;
-            
-            cameraRotation.y -= deltaX * 0.003;
-            cameraRotation.x -= deltaY * 0.003;
-            cameraRotation.x = Math.max(-Math.PI/2, Math.min(Math.PI/2, cameraRotation.x));
-            
-            mouseX = e.clientX;
-            mouseY = e.clientY;
-        }
-
-        function onMouseUp() {
-            mouseDown = false;
-        }
-
-        function onWheel(e) {
-            e.preventDefault();
-            const delta = e.deltaY * 0.001;
-            cameraVelocity.z += delta * 5;
-        }
-
-        function onClick(e) {
-            if (mouseDown) return;
-            
-            const mouse = new THREE.Vector2(
-                (e.clientX / window.innerWidth) * 2 - 1,
-                -(e.clientY / window.innerHeight) * 2 + 1
+            const forward = new THREE.Vector3(
+                Math.sin(cameraRotation.y) * Math.cos(cameraRotation.x),
+                Math.sin(cameraRotation.x),
+                Math.cos(cameraRotation.y) * Math.cos(cameraRotation.x)
+            );
+            const right = new THREE.Vector3(
+                Math.cos(cameraRotation.y),
+                0,
+                -Math.sin(cameraRotation.y)
             );
 
-            const raycaster = new THREE.Raycaster();
-            raycaster.setFromCamera(mouse, camera);
+            if (keys['w'] || keys['W'] || keys['ArrowUp']) cameraVelocity.add(forward.multiplyScalar(speed * 0.4));
+            if (keys['s'] || keys['S'] || keys['ArrowDown']) cameraVelocity.add(forward.multiplyScalar(-speed * 0.4));
+            if (keys['a'] || keys['A'] || keys['ArrowLeft']) cameraVelocity.add(right.multiplyScalar(-speed * 0.4));
+            if (keys['d'] || keys['D'] || keys['ArrowRight']) cameraVelocity.add(right.multiplyScalar(speed * 0.4));
+            if (keys['q'] || keys['Q']) cameraVelocity.y += speed * 0.4;
+            if (keys['e'] || keys['E']) cameraVelocity.y -= speed * 0.4;
 
-            const allObjects = [...stars.map(s => s.mesh), ...planets.map(p => p.mesh)];
-            const intersects = raycaster.intersectObjects(allObjects);
+            cameraVelocity.multiplyScalar(0.93);
+            cameraPosition.add(cameraVelocity);
 
-            if (intersects.length > 0) {
-                selectObject(intersects[0].object);
-            }
+            camera.position.copy(cameraPosition);
+            camera.rotation.order = 'YXZ';
+            camera.rotation.y = cameraRotation.y;
+            camera.rotation.x = cameraRotation.x;
         }
 
-        function selectObject(mesh) {
-            selectedObject = null;
-            
-            stars.forEach(star => {
-                if (star.mesh === mesh) {
-                    selectedObject = star;
-                    displayStarInfo(star);
-                }
-            });
-            
-            planets.forEach(planet => {
-                if (planet.mesh === mesh) {
-                    selectedObject = planet;
-                    displayPlanetInfo(planet);
-                }
-            });
-        }
-
-        function displayStarInfo(star) {
-            document.getElementById('objectName').textContent = `⭐ ${star.name}`;
-            document.getElementById('objectInfo').innerHTML = `
-                <div class="stat-line"><span class="stat-label">Класс:</span><span>${star.type.class}</span></div>
-                <div class="stat-line"><span class="stat-label">Температура:</span><span>${star.type.temp.toLocaleString()} K</span></div>
-                <div class="stat-line"><span class="stat-label">Радиус:</span><span>${star.baseSize.toFixed(1)} R☉</span></div>
-                <div class="stat-line"><span class="stat-label">Частоты:</span><span>${star.freqRange[0]}-${star.freqRange[1]} Hz</span></div>
-                <br>
-                <p style="color: rgba(200, 220, 255, 0.7); font-size: 12px; line-height: 1.5;">
-                    Эта звезда реагирует на звуковые частоты в диапазоне ${star.freqRange[0]}-${star.freqRange[1]} Гц.
-                    Её свечение усиливается при соответствующих частотах в музыке.
-                </p>
-            `;
-        }
-
-        function displayPlanetInfo(planet) {
-            document.getElementById('objectName').textContent = `🪐 ${planet.name}`;
-            document.getElementById('objectInfo').innerHTML = `
-                <div class="stat-line"><span class="stat-label">Тип:</span><span>${planet.type}</span></div>
-                <div class="stat-line"><span class="stat-label">Радиус:</span><span>${planet.size.toFixed(2)} R🜨</span></div>
-                <div class="stat-line"><span class="stat-label">Орбита:</span><span>${planet.orbit.radius.toFixed(1)} а.е.</span></div>
-                <div class="stat-line"><span class="stat-label">Период:</span><span>${(Math.sqrt(Math.pow(planet.orbit.radius, 3)) * 365).toFixed(0)} дней</span></div>
-                <br>
-                <p style="color: rgba(200, 220, 255, 0.7); font-size: 12px; line-height: 1.5;">
-                    Планета ${planet.type.toLowerCase()}-типа, обращающаяся вокруг звезды ${stars[0]?.name}.
-                    Высота орбиты меняется в такт басовым частотам музыки.
-                </p>
-            `;
-        }
-
-        // === УПРАВЛЕНИЕ КАМЕРОЙ ===
-        function handleCameraMovement() {
-            const speed = (keys['Shift'] ? 3 : 1) * timeScale;
-            
-            if (cameraMode === 'free') {
-                const forward = new THREE.Vector3(
-                    Math.sin(cameraRotation.y),
-                    0,
-                    Math.cos(cameraRotation.y)
-                );
-                const right = new THREE.Vector3(
-                    Math.cos(cameraRotation.y),
-                    0,
-                    -Math.sin(cameraRotation.y)
-                );
-
-                if (keys['w'] || keys['W'] || keys['ArrowUp']) cameraVelocity.add(forward.multiplyScalar(speed * 0.5));
-                if (keys['s'] || keys['S'] || keys['ArrowDown']) cameraVelocity.add(forward.multiplyScalar(-speed * 0.5));
-                if (keys['a'] || keys['A'] || keys['ArrowLeft']) cameraVelocity.add(right.multiplyScalar(-speed * 0.5));
-                if (keys['d'] || keys['D'] || keys['ArrowRight']) cameraVelocity.add(right.multiplyScalar(speed * 0.5));
-                if (keys['q'] || keys['Q']) cameraVelocity.y += speed * 0.5;
-                if (keys['e'] || keys['E']) cameraVelocity.y -= speed * 0.5;
-
-                // Инерция
-                cameraVelocity.multiplyScalar(0.9);
-                cameraPosition.add(cameraVelocity);
-
-                camera.position.copy(cameraPosition);
-                camera.rotation.order = 'YXZ';
-                camera.rotation.y = cameraRotation.y;
-                camera.rotation.x = cameraRotation.x;
-
-                stats.distance += cameraVelocity.length() * 0.01;
-            } else if (cameraMode === 'orbit' && selectedObject) {
-                const distance = 30;
-                const time = Date.now() * 0.0003;
-                camera.position.x = selectedObject.mesh.position.x + Math.cos(time) * distance;
-                camera.position.z = selectedObject.mesh.position.z + Math.sin(time) * distance;
-                camera.position.y = selectedObject.mesh.position.y + 15;
-                camera.lookAt(selectedObject.mesh.position);
-            } else if (cameraMode === 'galaxy') {
-                camera.position.set(0, 400, 0);
-                camera.lookAt(0, 0, 0);
-            } else if (cameraMode === 'cinematic') {
-                const time = Date.now() * 0.0002;
-                camera.position.x = Math.cos(time) * 200;
-                camera.position.z = Math.sin(time) * 200;
-                camera.position.y = 60 + Math.sin(time * 0.5) * 40;
-                camera.lookAt(0, 0, 0);
-            }
-        }
-
-        // === ОБНОВЛЕНИЕ ОРБИТ ===
         function updateOrbits(delta) {
             planets.forEach(planet => {
                 planet.orbit.angle += planet.orbit.speed * delta * timeScale;
@@ -1306,43 +1120,22 @@
             });
         }
 
-        // === АНИМАЦИЯ ===
         function animate() {
             requestAnimationFrame(animate);
             
             const delta = clock.getDelta();
             const time = clock.getElapsedTime();
             
-            // Обновление шейдеров
-            if (starfield) starfield.material.uniforms.time.value = time;
-            nebulae.forEach(n => n.material.uniforms.time.value = time);
-            stars.forEach(s => {
-                s.material.uniforms.time.value = time;
-                s.raysMaterial.uniforms.time.value = time;
-            });
-            
-            // Вращение космической пыли
-            if (dustParticles) {
-                dustParticles.rotation.y += 0.0001;
-                dustParticles.rotation.x += 0.00005;
+            if (centralStar) {
+                centralStar.material.uniforms.time.value = time;
+                centralStar.glowMaterial.uniforms.time.value = time;
             }
             
             processAudio();
             handleCameraMovement();
             updateOrbits(delta);
-            drawMinimap();
             
             renderer.render(scene, camera);
-        }
-
-        // === UI ФУНКЦИИ ===
-        function changeCameraMode(mode) {
-            cameraMode = mode;
-        }
-
-        function changeMusicMode(mode) {
-            musicMode = mode;
-            generateStarSystem();
         }
 
         function changeTimeSpeed(value) {
@@ -1351,58 +1144,127 @@
             document.getElementById('timeSpeed').textContent = timeScale.toFixed(1);
         }
 
-        function hyperJump() {
-            const duration = 2000;
-            const start = Date.now();
-            const startPos = cameraPosition.clone();
-            const targetPos = new THREE.Vector3(
-                (Math.random() - 0.5) * 600,
-                50 + (Math.random() - 0.5) * 100,
-                (Math.random() - 0.5) * 600
-            );
+        function openEditor() {
+            document.getElementById('editor').style.display = 'block';
+            document.getElementById('overlay').style.display = 'block';
             
-            function jump() {
-                const progress = Math.min((Date.now() - start) / duration, 1);
-                const eased = 1 - Math.pow(1 - progress, 3);
-                cameraPosition.lerpVectors(startPos, targetPos, eased);
-                
-                if (progress < 1) {
-                    requestAnimationFrame(jump);
-                } else {
-                    generateStarSystem();
-                }
-            }
-            
-            jump();
+            document.getElementById('starTypeSelect').value = centralStar.typeKey;
+            document.getElementById('planetCountSlider').value = planets.length;
+            updatePlanetCount(planets.length);
         }
 
-        function saveBookmark() {
-            alert(`Система "${stars[0]?.name || 'Неизвестная'}" сохранена в закладки!`);
+        function closeEditor() {
+            document.getElementById('editor').style.display = 'none';
+            document.getElementById('overlay').style.display = 'none';
+        }
+
+        function updatePlanetCount(count) {
+            document.getElementById('planetCount').textContent = count;
+        }
+
+        function applyChanges() {
+            const starTypeKey = document.getElementById('starTypeSelect').value;
+            const planetCount = parseInt(document.getElementById('planetCountSlider').value);
+            
+            // Regenerate with new params
+            if (centralStar) {
+                scene.remove(centralStar.mesh);
+                planets.forEach(p => {
+                    scene.remove(p.mesh);
+                    if (p.trail) scene.remove(p.trail);
+                });
+                planets = [];
+            }
+
+            createCentralStar(STAR_TYPES[starTypeKey], starTypeKey);
+            
+            for (let i = 0; i < planetCount; i++) {
+                createPlanet(i);
+            }
+
+            updateSystemInfo();
+            closeEditor();
+        }
+
+        function updateSystemInfo() {
+            document.getElementById('objectInfo').innerHTML = `
+                <div class="stat-line">
+                    <span class="stat-label">Star Type:</span>
+                    <span class="glow-value">${centralStar.typeKey}</span>
+                </div>
+                <div class="stat-line">
+                    <span class="stat-label">Temperature:</span>
+                    <span class="glow-value">${centralStar.type.temp.toLocaleString()} K</span>
+                </div>
+                <div class="stat-line">
+                    <span class="stat-label">Planets:</span>
+                    <span class="glow-value">${planets.length}</span>
+                </div>
+                <br>
+                <p style="line-height: 1.8; color: rgba(200, 220, 255, 0.8); font-size: 13px;">
+                    ${centralStar.typeKey}-class star with ${planets.length} orbiting planets.
+                    Orbital trails react to audio frequencies.
+                </p>
+            `;
+        }
+
+        function saveSystem() {
+            const systemData = {
+                starType: centralStar.typeKey,
+                planets: planets.map(p => ({
+                    type: p.planetType,
+                    size: p.size,
+                    orbitRadius: p.orbit.radius,
+                    orbitSpeed: p.orbit.speed
+                }))
+            };
+            
+            const dataStr = JSON.stringify(systemData, null, 2);
+            const blob = new Blob([dataStr], {type: 'application/json'});
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.download = `stellar_system_${Date.now()}.json`;
+            link.href = url;
+            link.click();
+        }
+
+        function loadSystem() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'application/json';
+            input.onchange = e => {
+                const file = e.target.files[0];
+                const reader = new FileReader();
+                reader.onload = event => {
+                    try {
+                        const systemData = JSON.parse(event.target.result);
+                        // Implement loading logic here
+                        alert('System loaded!');
+                    } catch (err) {
+                        alert('Failed to load system');
+                    }
+                };
+                reader.readAsText(file);
+            };
+            input.click();
         }
 
         function screenshot() {
             renderer.render(scene, camera);
-            const dataURL = renderer.domElement.toDataURL('image/png');
             const link = document.createElement('a');
-            link.download = `cosmos_${Date.now()}.png`;
-            link.href = dataURL;
+            link.download = `stellar_symphony_${Date.now()}.png`;
+            link.href = renderer.domElement.toDataURL('image/png');
             link.click();
         }
 
         function toggleUI() {
-            const panels = document.querySelectorAll('.ui-panel');
-            panels.forEach(panel => {
-                panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+            document.querySelectorAll('.ui-panel').forEach(panel => {
+                if (panel.id !== 'editor') {
+                    panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+                }
             });
         }
 
-        function updateStats() {
-            document.getElementById('systemsVisited').textContent = stats.systems;
-            document.getElementById('starsFound').textContent = stats.stars;
-            document.getElementById('distanceTraveled').textContent = stats.distance.toFixed(2) + ' св. лет';
-        }
-
-        // === ЗАПУСК ===
         window.addEventListener('load', init);
     </script>
 </body>

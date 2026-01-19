@@ -70,7 +70,7 @@
             left: 50%;
             transform: translateX(-50%);
             width: 700px;
-            height: 160px;
+            height: 200px;
             padding: 20px;
         }
 
@@ -264,7 +264,7 @@
 
         #spectrumCanvas {
             width: 100%;
-            height: 120px;
+            height: 110px;
             border-radius: 15px;
         }
 
@@ -389,10 +389,12 @@
         
         <div class="control-group">
             <strong>Audio Source</strong>
-            <input type="file" id="audioFile" accept="audio/*">
-            <button onclick="startMicrophone()">Microphone</button>
-            <button onclick="generateAmbient()">Cosmic Ambient</button>
-            <button onclick="toggleAudio()" id="audioBtn">Play</button>
+            <button onclick="initAudio()" id="initBtn" style="width: 100%; background: linear-gradient(135deg, rgba(255, 150, 100, 0.4), rgba(255, 100, 150, 0.4));">Enable Audio</button>
+            <input type="file" id="audioFile" accept="audio/*" style="display: none;">
+            <button onclick="document.getElementById('audioFile').click()" style="display: none;" id="loadFileBtn">Load Audio File</button>
+            <button onclick="startMicrophone()" style="display: none;" id="micBtn">Microphone</button>
+            <button onclick="generateAmbient()" style="display: none;" id="ambientBtn">Cosmic Ambient</button>
+            <button onclick="toggleAudio()" id="audioBtn" style="display: none;">Play</button>
         </div>
 
         <div class="control-group">
@@ -424,13 +426,27 @@
         <div id="objectInfo">
             <p style="line-height: 1.8; color: rgba(200, 220, 255, 0.8); font-size: 13px;">
                 A procedurally-generated stellar system with reactive audio visualization.
-                The stars in the sky pulse with their frequency ranges.
-                Click on objects to explore.
+                Orbital trails visualize sound like a waveform analyzer.
+                Background stars pulse with their frequency ranges.
+                Explore galaxy arms, star clusters, and nebulae.
             </p>
+            <br>
+            <div class="stat-line">
+                <span class="stat-label">Hide/Show UI</span>
+                <span>ESC</span>
+            </div>
         </div>
     </div>
 
     <div id="spectrum" class="ui-panel">
+        <div style="margin-bottom: 10px;">
+            <strong style="color: #8df; font-size: 13px; text-transform: uppercase; letter-spacing: 1.5px;">Audio Timeline</strong>
+            <div style="display: flex; align-items: center; gap: 10px; margin-top: 8px;">
+                <span id="currentTime" style="font-size: 11px; color: rgba(200, 220, 255, 0.7);">0:00</span>
+                <input type="range" id="seekSlider" min="0" max="100" value="0" step="0.1" style="flex: 1;" oninput="seekAudio(this.value)">
+                <span id="totalTime" style="font-size: 11px; color: rgba(200, 220, 255, 0.7);">0:00</span>
+            </div>
+        </div>
         <canvas id="spectrumCanvas"></canvas>
     </div>
 
@@ -465,6 +481,7 @@
         let scene, camera, renderer, audioContext, analyser, dataArray;
         let centralStar, planets = [], orbitLines = [];
         let backgroundStars = [];
+        let nebulae = [];
         let timeScale = 1.0;
         let clock = new THREE.Clock();
         let audioSource = null, audioElement = null, gainNode = null;
@@ -475,6 +492,7 @@
         let keys = {};
         let ambientOscillators = [];
         let currentSystem = null;
+        let uiVisible = true;
 
         const STAR_TYPES = {
             'O': {color: 0x9bb0ff, temp: 30000, size: 10, freq: [6000, 20000]},
@@ -511,6 +529,10 @@
             const ambientLight = new THREE.AmbientLight(0x1a2344, 0.4);
             scene.add(ambientLight);
 
+            // Initialize arrays
+            backgroundStars = [];
+            nebulae = [];
+            
             createBackgroundStars();
             generateNewSystem();
             setupAudio();
@@ -528,10 +550,11 @@
         }
 
         function createBackgroundStars() {
-            for (let i = 0; i < 3000; i++) {
+            // Distant stars - very far away
+            for (let i = 0; i < 5000; i++) {
                 const theta = Math.random() * Math.PI * 2;
                 const phi = Math.random() * Math.PI;
-                const radius = 1500 + Math.random() * 2000;
+                const radius = 3000 + Math.random() * 4000;
                 
                 const x = Math.sin(phi) * Math.cos(theta) * radius;
                 const y = Math.sin(phi) * Math.sin(theta) * radius;
@@ -540,23 +563,213 @@
                 const starTypes = Object.values(STAR_TYPES);
                 const starType = starTypes[Math.floor(Math.random() * starTypes.length)];
                 
-                const geometry = new THREE.SphereGeometry(0.5 + Math.random() * 1, 8, 8);
+                const size = 0.3 + Math.random() * 0.8;
+                const geometry = new THREE.SphereGeometry(size, 6, 6);
                 const material = new THREE.MeshBasicMaterial({
                     color: starType.color,
                     transparent: true,
-                    opacity: 0.4 + Math.random() * 0.3
+                    opacity: 0.3 + Math.random() * 0.3
                 });
                 
                 const star = new THREE.Mesh(geometry, material);
                 star.position.set(x, y, z);
                 scene.add(star);
                 
+                const glowGeometry = new THREE.SphereGeometry(size * 2, 6, 6);
+                const glowMaterial = new THREE.MeshBasicMaterial({
+                    color: starType.color,
+                    transparent: true,
+                    opacity: 0.08,
+                    blending: THREE.AdditiveBlending
+                });
+                const glow = new THREE.Mesh(glowGeometry, glowMaterial);
+                star.add(glow);
+                
                 backgroundStars.push({
                     mesh: star,
+                    glow: glow,
                     baseOpacity: material.opacity,
+                    baseGlowOpacity: 0.08,
                     freqRange: starType.freq,
-                    material: material
+                    material: material,
+                    glowMaterial: glowMaterial
                 });
+            }
+            
+            // Create galaxy arms - closer
+            const numArms = 4;
+            const starsPerArm = 250;
+            
+            for (let arm = 0; arm < numArms; arm++) {
+                const armAngle = (arm / numArms) * Math.PI * 2;
+                
+                for (let i = 0; i < starsPerArm; i++) {
+                    const distance = 1200 + Math.random() * 1800;
+                    const armProgress = i / starsPerArm;
+                    const angle = armAngle + armProgress * Math.PI * 3 + (Math.random() - 0.5) * 0.8;
+                    
+                    const x = Math.cos(angle) * distance + (Math.random() - 0.5) * 180;
+                    const y = (Math.random() - 0.5) * 350 * (1 - armProgress * 0.5);
+                    const z = Math.sin(angle) * distance + (Math.random() - 0.5) * 180;
+
+                    const starTypes = Object.values(STAR_TYPES);
+                    const starType = starTypes[Math.floor(Math.random() * starTypes.length)];
+                    
+                    const size = 0.6 + Math.random() * 1.5;
+                    const geometry = new THREE.SphereGeometry(size, 8, 8);
+                    const material = new THREE.MeshBasicMaterial({
+                        color: starType.color,
+                        transparent: true,
+                        opacity: 0.4 + Math.random() * 0.3
+                    });
+                    
+                    const star = new THREE.Mesh(geometry, material);
+                    star.position.set(x, y, z);
+                    scene.add(star);
+                    
+                    const glowGeometry = new THREE.SphereGeometry(size * 2.2, 8, 8);
+                    const glowMaterial = new THREE.MeshBasicMaterial({
+                        color: starType.color,
+                        transparent: true,
+                        opacity: 0.12,
+                        blending: THREE.AdditiveBlending
+                    });
+                    const glow = new THREE.Mesh(glowGeometry, glowMaterial);
+                    star.add(glow);
+                    
+                    backgroundStars.push({
+                        mesh: star,
+                        glow: glow,
+                        baseOpacity: material.opacity,
+                        baseGlowOpacity: 0.12,
+                        freqRange: starType.freq,
+                        material: material,
+                        glowMaterial: glowMaterial
+                    });
+                }
+            }
+            
+            // Create star clusters
+            const numClusters = 10;
+            for (let c = 0; c < numClusters; c++) {
+                const clusterX = (Math.random() - 0.5) * 3500;
+                const clusterY = (Math.random() - 0.5) * 800;
+                const clusterZ = (Math.random() - 0.5) * 3500;
+                const clusterSize = 80 + Math.random() * 120;
+                const starsInCluster = 20 + Math.floor(Math.random() * 35);
+                
+                for (let i = 0; i < starsInCluster; i++) {
+                    const theta = Math.random() * Math.PI * 2;
+                    const phi = Math.random() * Math.PI;
+                    const r = Math.random() * clusterSize;
+                    
+                    const x = clusterX + Math.sin(phi) * Math.cos(theta) * r;
+                    const y = clusterY + Math.sin(phi) * Math.sin(theta) * r;
+                    const z = clusterZ + Math.cos(phi) * r;
+
+                    const starTypes = Object.values(STAR_TYPES);
+                    const starType = starTypes[Math.floor(Math.random() * 3)];
+                    
+                    const size = 0.5 + Math.random() * 1.3;
+                    const geometry = new THREE.SphereGeometry(size, 8, 8);
+                    const material = new THREE.MeshBasicMaterial({
+                        color: starType.color,
+                        transparent: true,
+                        opacity: 0.5 + Math.random() * 0.3
+                    });
+                    
+                    const star = new THREE.Mesh(geometry, material);
+                    star.position.set(x, y, z);
+                    scene.add(star);
+                    
+                    const glowGeometry = new THREE.SphereGeometry(size * 1.8, 8, 8);
+                    const glowMaterial = new THREE.MeshBasicMaterial({
+                        color: starType.color,
+                        transparent: true,
+                        opacity: 0.15,
+                        blending: THREE.AdditiveBlending
+                    });
+                    const glow = new THREE.Mesh(glowGeometry, glowMaterial);
+                    star.add(glow);
+                    
+                    backgroundStars.push({
+                        mesh: star,
+                        glow: glow,
+                        baseOpacity: material.opacity,
+                        baseGlowOpacity: 0.15,
+                        freqRange: starType.freq,
+                        material: material,
+                        glowMaterial: glowMaterial
+                    });
+                }
+            }
+            
+            // Create nebulae
+            const numNebulae = 6;
+            for (let n = 0; n < numNebulae; n++) {
+                const nebulaColors = [
+                    [0x1a4d7a, 0x7a1a4d],
+                    [0x2d1a5a, 0x1a5a2d],
+                    [0x5a2d1a, 0x1a2d5a],
+                    [0x4d1a7a, 0x1a7a4d]
+                ];
+                const colors = nebulaColors[Math.floor(Math.random() * nebulaColors.length)];
+                
+                const size = 250 + Math.random() * 350;
+                const x = (Math.random() - 0.5) * 2800;
+                const y = (Math.random() - 0.5) * 700;
+                const z = (Math.random() - 0.5) * 2800;
+                
+                const geometry = new THREE.SphereGeometry(size, 32, 32);
+                const material = new THREE.ShaderMaterial({
+                    uniforms: {
+                        time: { value: 0 },
+                        color1: { value: new THREE.Color(colors[0]) },
+                        color2: { value: new THREE.Color(colors[1]) },
+                        audioIntensity: { value: 0.0 }
+                    },
+                    vertexShader: `
+                        varying vec3 vPosition;
+                        varying vec3 vNormal;
+                        void main() {
+                            vPosition = position;
+                            vNormal = normalize(normalMatrix * normal);
+                            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+                        }
+                    `,
+                    fragmentShader: `
+                        uniform float time;
+                        uniform vec3 color1;
+                        uniform vec3 color2;
+                        uniform float audioIntensity;
+                        varying vec3 vPosition;
+                        varying vec3 vNormal;
+                        
+                        float noise(vec3 p) {
+                            return sin(p.x * 0.02 + time * 0.1) * 
+                                   cos(p.y * 0.02 + time * 0.15) * 
+                                   sin(p.z * 0.02 + time * 0.12);
+                        }
+                        
+                        void main() {
+                            float n = noise(vPosition);
+                            float n2 = noise(vPosition * 2.0 + vec3(100.0));
+                            vec3 color = mix(color1, color2, n * 0.5 + 0.5);
+                            float edge = pow(1.0 - abs(dot(vNormal, vec3(0.0, 0.0, 1.0))), 2.0);
+                            float alpha = (0.07 + abs(n) * 0.09 + n2 * 0.04 + audioIntensity * 0.12) * edge;
+                            gl_FragColor = vec4(color, alpha);
+                        }
+                    `,
+                    transparent: true,
+                    side: THREE.DoubleSide,
+                    blending: THREE.AdditiveBlending,
+                    depthWrite: false
+                });
+                
+                const nebula = new THREE.Mesh(geometry, material);
+                nebula.position.set(x, y, z);
+                scene.add(nebula);
+                nebulae.push(nebula);
             }
         }
 
@@ -707,9 +920,11 @@
 
             scene.add(planetMesh);
 
-            // Orbit trail
+            // Orbit trail - visual audio wave
             const trailPoints = [];
-            const segments = 128;
+            const segments = 512;
+            const indices = [];
+            
             for (let i = 0; i <= segments; i++) {
                 const angle = (i / segments) * Math.PI * 2;
                 trailPoints.push(new THREE.Vector3(
@@ -720,37 +935,73 @@
             }
             
             const trailGeometry = new THREE.BufferGeometry().setFromPoints(trailPoints);
+            
+            // Add vertex index attribute
+            const vertexIndices = new Float32Array(segments + 1);
+            for (let i = 0; i <= segments; i++) {
+                vertexIndices[i] = i;
+            }
+            trailGeometry.setAttribute('vertexIndex', new THREE.BufferAttribute(vertexIndices, 1));
+            
             const trailMaterial = new THREE.ShaderMaterial({
                 uniforms: {
                     color: { value: new THREE.Color(planetType.colors[0]) },
-                    audioIntensity: { value: 0.0 }
+                    audioData: { value: new Float32Array(128) },
+                    time: { value: 0 },
+                    audioIntensity: { value: 0.0 },
+                    totalSegments: { value: segments }
                 },
                 vertexShader: `
-                    varying float vProgress;
+                    attribute float vertexIndex;
+                    uniform float audioData[128];
+                    uniform float time;
                     uniform float audioIntensity;
+                    uniform float totalSegments;
+                    varying float vIntensity;
+                    varying float vProgress;
                     
                     void main() {
-                        vProgress = position.x;
                         vec3 pos = position;
-                        pos.y += sin(position.x * 0.1 + position.z * 0.1) * audioIntensity * 3.0;
+                        
+                        float normalizedIndex = vertexIndex / totalSegments;
+                        vProgress = normalizedIndex;
+                        
+                        // Get audio data for this segment
+                        int audioIndex = int(normalizedIndex * 127.0);
+                        float audioValue = audioData[audioIndex];
+                        
+                        // Create smooth wave effect based on audio
+                        float wave = audioValue * 12.0;
+                        
+                        // Add smooth sine waves for fluid motion
+                        wave += sin(normalizedIndex * 25.0 + time * 3.0) * audioIntensity * 2.5;
+                        wave += cos(normalizedIndex * 18.0 - time * 2.0) * audioIntensity * 1.8;
+                        
+                        pos.y += wave;
+                        
+                        vIntensity = audioValue;
+                        
                         gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
                     }
                 `,
                 fragmentShader: `
                     uniform vec3 color;
                     uniform float audioIntensity;
+                    varying float vIntensity;
                     varying float vProgress;
                     
                     void main() {
-                        float alpha = 0.3 + audioIntensity * 0.4;
-                        gl_FragColor = vec4(color, alpha);
+                        // Smooth gradient along the trail
+                        float alpha = 0.75 + vIntensity * 0.25 + audioIntensity * 0.15;
+                        vec3 finalColor = color * (1.0 + vIntensity * 0.6);
+                        gl_FragColor = vec4(finalColor, alpha);
                     }
                 `,
                 transparent: true,
                 blending: THREE.AdditiveBlending
             });
             
-            const trail = new THREE.Line(trailGeometry, trailMaterial);
+            const trail = new THREE.LineLoop(trailGeometry, trailMaterial);
             scene.add(trail);
 
             // Atmosphere
@@ -805,136 +1056,220 @@
             gainNode.gain.value = 0.5;
             gainNode.connect(audioContext.destination);
 
-            document.getElementById('audioFile').addEventListener('change', function(e) {
+            document.getElementById('audioFile').addEventListener('change', async function(e) {
                 const file = e.target.files[0];
-                if (file) {
+                if (!file) return;
+                
+                try {
+                    // Resume audio context
+                    if (audioContext.state === 'suspended') {
+                        await audioContext.resume();
+                    }
+                    
+                    // Stop previous audio
                     if (audioElement) {
                         audioElement.pause();
+                        audioElement.src = '';
                         audioElement = null;
                     }
-                    
-                    audioElement = new Audio();
-                    audioElement.src = URL.createObjectURL(file);
-                    audioElement.loop = true;
-                    
                     if (audioSource) {
                         audioSource.disconnect();
+                        audioSource = null;
                     }
                     
+                    // Show loading
+                    document.getElementById('audioBtn').textContent = 'Loading...';
+                    
+                    // Create new audio element
+                    audioElement = new Audio();
+                    const objectURL = URL.createObjectURL(file);
+                    audioElement.src = objectURL;
+                    audioElement.loop = true;
+                    audioElement.preload = 'auto';
+                    
+                    // Wait for audio to be ready
+                    await new Promise((resolve, reject) => {
+                        audioElement.addEventListener('canplaythrough', resolve, { once: true });
+                        audioElement.addEventListener('error', reject, { once: true });
+                        audioElement.load();
+                    });
+                    
+                    // Connect audio
                     audioSource = audioContext.createMediaElementSource(audioElement);
                     audioSource.connect(analyser);
                     analyser.connect(gainNode);
                     
-                    audioElement.play().then(() => {
-                        document.getElementById('audioBtn').textContent = 'Pause';
-                    });
-                }
-            });
-        }
-
-        function startMicrophone() {
-            navigator.mediaDevices.getUserMedia({audio: true})
-                .then(stream => {
-                    if (audioElement) {
-                        audioElement.pause();
-                        audioElement = null;
-                    }
-                    if (audioSource) {
-                        audioSource.disconnect();
-                    }
-                    
-                    audioSource = audioContext.createMediaStreamSource(stream);
-                    audioSource.connect(analyser);
-                    analyser.connect(gainNode);
-                    
-                    document.getElementById('audioBtn').textContent = 'Stop';
-                });
-        }
-
-        function generateAmbient() {
-            if (audioElement) {
-                audioElement.pause();
-                audioElement = null;
-            }
-            
-            ambientOscillators.forEach(osc => {
-                if (osc.stop) osc.stop();
-            });
-            ambientOscillators = [];
-            
-            const filter = audioContext.createBiquadFilter();
-            filter.type = 'lowpass';
-            filter.frequency.value = 1500;
-            filter.Q.value = 0.8;
-            
-            const reverb = audioContext.createConvolver();
-            const reverbTime = 5;
-            const sampleRate = audioContext.sampleRate;
-            const length = sampleRate * reverbTime;
-            const impulse = audioContext.createBuffer(2, length, sampleRate);
-            
-            for (let channel = 0; channel < 2; channel++) {
-                const channelData = impulse.getChannelData(channel);
-                for (let i = 0; i < length; i++) {
-                    channelData[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / length, 3);
-                }
-            }
-            reverb.buffer = impulse;
-            
-            const frequencies = [40, 60, 90, 120, 180, 240, 360];
-            
-            frequencies.forEach((freq, i) => {
-                const osc = audioContext.createOscillator();
-                const oscGain = audioContext.createGain();
-                const lfo = audioContext.createOscillator();
-                const lfoGain = audioContext.createGain();
-                
-                osc.type = ['sine', 'triangle', 'sawtooth'][i % 3];
-                osc.frequency.value = freq;
-                oscGain.gain.value = 0.2 / frequencies.length;
-                
-                lfo.type = 'sine';
-                lfo.frequency.value = 0.03 + Math.random() * 0.12;
-                lfoGain.gain.value = freq * 0.04;
-                
-                lfo.connect(lfoGain);
-                lfoGain.connect(osc.frequency);
-                
-                osc.connect(oscGain);
-                oscGain.connect(filter);
-                
-                lfo.start();
-                osc.start();
-                ambientOscillators.push(osc, lfo);
-                
-                setInterval(() => {
-                    if (ambientOscillators.includes(osc)) {
-                        const newFreq = freq * (0.9 + Math.random() * 0.2);
-                        osc.frequency.exponentialRampToValueAtTime(newFreq, audioContext.currentTime + 8);
-                    }
-                }, 8000 + Math.random() * 5000);
-            });
-            
-            filter.connect(reverb);
-            reverb.connect(analyser);
-            analyser.connect(gainNode);
-            
-            document.getElementById('audioBtn').textContent = 'Stop';
-        }
-
-        function toggleAudio() {
-            if (audioElement) {
-                if (audioElement.paused) {
-                    audioElement.play();
+                    // Play
+                    await audioElement.play();
                     document.getElementById('audioBtn').textContent = 'Pause';
-                } else {
+                    
+                } catch (error) {
+                    console.error('Audio playback error:', error);
+                    document.getElementById('audioBtn').textContent = 'Error - Try Again';
+                    alert('Failed to play audio. Please try again.');
+                }
+            });
+        }
+
+        async function initAudio() {
+            try {
+                if (audioContext.state === 'suspended') {
+                    await audioContext.resume();
+                }
+                
+                // Hide init button, show other controls
+                document.getElementById('initBtn').style.display = 'none';
+                document.getElementById('loadFileBtn').style.display = 'inline-block';
+                document.getElementById('micBtn').style.display = 'inline-block';
+                document.getElementById('ambientBtn').style.display = 'inline-block';
+                document.getElementById('audioBtn').style.display = 'inline-block';
+                
+                // Auto-start ambient
+                await generateAmbient();
+                
+            } catch (error) {
+                console.error('Audio init error:', error);
+                alert('Failed to initialize audio. Please try again.');
+            }
+        }
+
+        async function startMicrophone() {
+            try {
+                // Resume audio context
+                if (audioContext.state === 'suspended') {
+                    await audioContext.resume();
+                }
+                
+                // Stop previous audio
+                if (audioElement) {
                     audioElement.pause();
+                    audioElement = null;
+                }
+                if (audioSource) {
+                    audioSource.disconnect();
+                }
+                ambientOscillators.forEach(osc => {
+                    if (osc.stop) osc.stop();
+                });
+                ambientOscillators = [];
+                
+                const stream = await navigator.mediaDevices.getUserMedia({audio: true});
+                audioSource = audioContext.createMediaStreamSource(stream);
+                audioSource.connect(analyser);
+                analyser.connect(gainNode);
+                
+                document.getElementById('audioBtn').textContent = 'Stop Mic';
+            } catch (error) {
+                alert('Microphone not available: ' + error.message);
+            }
+        }
+
+        async function generateAmbient() {
+            try {
+                // Resume audio context
+                if (audioContext.state === 'suspended') {
+                    await audioContext.resume();
+                }
+                
+                // Stop previous audio
+                if (audioElement) {
+                    audioElement.pause();
+                    audioElement = null;
+                }
+                if (audioSource) {
+                    audioSource.disconnect();
+                    audioSource = null;
+                }
+                ambientOscillators.forEach(osc => {
+                    if (osc.stop) osc.stop();
+                });
+                ambientOscillators = [];
+                
+                const filter = audioContext.createBiquadFilter();
+                filter.type = 'lowpass';
+                filter.frequency.value = 1500;
+                filter.Q.value = 0.8;
+                
+                const reverb = audioContext.createConvolver();
+                const reverbTime = 5;
+                const sampleRate = audioContext.sampleRate;
+                const length = sampleRate * reverbTime;
+                const impulse = audioContext.createBuffer(2, length, sampleRate);
+                
+                for (let channel = 0; channel < 2; channel++) {
+                    const channelData = impulse.getChannelData(channel);
+                    for (let i = 0; i < length; i++) {
+                        channelData[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / length, 3);
+                    }
+                }
+                reverb.buffer = impulse;
+                
+                const frequencies = [40, 60, 90, 120, 180, 240, 360];
+                
+                frequencies.forEach((freq, i) => {
+                    const osc = audioContext.createOscillator();
+                    const oscGain = audioContext.createGain();
+                    const lfo = audioContext.createOscillator();
+                    const lfoGain = audioContext.createGain();
+                    
+                    osc.type = ['sine', 'triangle', 'sawtooth'][i % 3];
+                    osc.frequency.value = freq;
+                    oscGain.gain.value = 0.2 / frequencies.length;
+                    
+                    lfo.type = 'sine';
+                    lfo.frequency.value = 0.03 + Math.random() * 0.12;
+                    lfoGain.gain.value = freq * 0.04;
+                    
+                    lfo.connect(lfoGain);
+                    lfoGain.connect(osc.frequency);
+                    
+                    osc.connect(oscGain);
+                    oscGain.connect(filter);
+                    
+                    lfo.start();
+                    osc.start();
+                    ambientOscillators.push(osc, lfo);
+                    
+                    setInterval(() => {
+                        if (ambientOscillators.includes(osc)) {
+                            const newFreq = freq * (0.9 + Math.random() * 0.2);
+                            osc.frequency.exponentialRampToValueAtTime(newFreq, audioContext.currentTime + 8);
+                        }
+                    }, 8000 + Math.random() * 5000);
+                });
+                
+                filter.connect(reverb);
+                reverb.connect(analyser);
+                analyser.connect(gainNode);
+                
+                document.getElementById('audioBtn').textContent = 'Stop Ambient';
+            } catch (error) {
+                console.error('Ambient generation error:', error);
+                alert('Failed to generate ambient audio');
+            }
+        }
+
+        async function toggleAudio() {
+            try {
+                if (audioContext.state === 'suspended') {
+                    await audioContext.resume();
+                }
+                
+                if (audioElement) {
+                    if (audioElement.paused) {
+                        await audioElement.play();
+                        document.getElementById('audioBtn').textContent = 'Pause';
+                    } else {
+                        audioElement.pause();
+                        document.getElementById('audioBtn').textContent = 'Play';
+                    }
+                } else if (ambientOscillators.length > 0) {
+                    ambientOscillators.forEach(osc => osc.stop());
+                    ambientOscillators = [];
                     document.getElementById('audioBtn').textContent = 'Play';
                 }
-            } else if (ambientOscillators.length > 0) {
-                ambientOscillators.forEach(osc => osc.stop());
-                ambientOscillators = [];
-                document.getElementById('audioBtn').textContent = 'Play';
+            } catch (error) {
+                console.error('Toggle audio error:', error);
             }
         }
 
@@ -958,27 +1293,53 @@
             // Central star
             if (centralStar) {
                 const freqValue = (bass * 0.4 + mid * 0.3 + high * 0.3);
-                centralStar.material.uniforms.intensity.value = 0.85 + freqValue * 0.4;
-                const targetScale = 1 + freqValue * 0.12;
-                centralStar.mesh.scale.lerp(new THREE.Vector3(targetScale, targetScale, targetScale), 0.1);
+                centralStar.material.uniforms.intensity.value = 0.85 + freqValue * 0.5;
+                const targetScale = 1 + freqValue * 0.15;
+                centralStar.mesh.scale.lerp(new THREE.Vector3(targetScale, targetScale, targetScale), 0.12);
             }
 
-            // Planets and trails
+            // Planets and trails with audio data
             planets.forEach(planet => {
-                const targetY = planet.baseY + bass * 4;
-                planet.mesh.position.y += (targetY - planet.mesh.position.y) * 0.08;
+                const targetY = planet.baseY + bass * 5;
+                planet.mesh.position.y += (targetY - planet.mesh.position.y) * 0.1;
                 planet.mesh.rotation.y += 0.005 * (1 + mid * 0.5);
                 
                 if (planet.trailMaterial) {
-                    planet.trailMaterial.uniforms.audioIntensity.value = bass * 0.5 + mid * 0.3;
+                    // Update audio data array for trail visualization
+                    const audioDataArray = new Float32Array(128);
+                    for (let i = 0; i < 128; i++) {
+                        const dataIndex = Math.floor(i * dataArray.length / 128);
+                        audioDataArray[i] = dataArray[dataIndex] / 255.0;
+                    }
+                    planet.trailMaterial.uniforms.audioData.value = audioDataArray;
+                    planet.trailMaterial.uniforms.audioIntensity.value = bass * 0.6 + mid * 0.4;
+                    planet.trailMaterial.uniforms.time.value = clock.getElapsedTime();
                 }
             });
 
-            // Background stars
+            // Background stars - much more reactive
             backgroundStars.forEach(star => {
                 const freqValue = getFrequencyForRange(star.freqRange[0], star.freqRange[1]) / 255;
-                const targetOpacity = star.baseOpacity + freqValue * 0.5;
-                star.material.opacity += (targetOpacity - star.material.opacity) * 0.15;
+                
+                // Increase opacity range significantly
+                const targetOpacity = star.baseOpacity + freqValue * 0.7;
+                star.material.opacity += (targetOpacity - star.material.opacity) * 0.2;
+                
+                // Make glow more intense
+                const targetGlowOpacity = star.baseGlowOpacity + freqValue * 0.6;
+                star.glowMaterial.opacity += (targetGlowOpacity - star.glowMaterial.opacity) * 0.2;
+                
+                // Scale stars based on audio
+                const targetScale = 1 + freqValue * 0.4;
+                star.mesh.scale.lerp(new THREE.Vector3(targetScale, targetScale, targetScale), 0.15);
+            });
+
+            // Nebulae react to audio
+            nebulae.forEach(nebula => {
+                if (nebula.material.uniforms) {
+                    const nebulaIntensity = (bass * 0.5 + mid * 0.3 + high * 0.2);
+                    nebula.material.uniforms.audioIntensity.value = nebulaIntensity;
+                }
             });
 
             drawSpectrum(dataArray);
@@ -1078,38 +1439,94 @@
                 cameraVelocity.z += delta * 5;
             });
             
-            window.addEventListener('keydown', e => keys[e.key] = true);
+            window.addEventListener('keydown', e => {
+                keys[e.key] = true;
+                
+                // ESC to toggle UI
+                if (e.key === 'Escape') {
+                    toggleUI();
+                }
+            });
             window.addEventListener('keyup', e => keys[e.key] = false);
         }
 
+        function seekAudio(value) {
+            if (audioElement && audioElement.duration) {
+                const seekTime = (value / 100) * audioElement.duration;
+                audioElement.currentTime = seekTime;
+            }
+        }
+
+        function updateAudioTimeline() {
+            if (audioElement && audioElement.duration) {
+                const currentTime = audioElement.currentTime;
+                const duration = audioElement.duration;
+                const progress = (currentTime / duration) * 100;
+                
+                document.getElementById('seekSlider').value = progress;
+                document.getElementById('currentTime').textContent = formatTime(currentTime);
+                document.getElementById('totalTime').textContent = formatTime(duration);
+            }
+        }
+
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${mins}:${secs.toString().padStart(2, '0')}`;
+        }
+
         function handleCameraMovement() {
+            // Don't move camera if user is typing in an input field
+            if (document.activeElement.tagName === 'INPUT' || 
+                document.activeElement.tagName === 'SELECT' ||
+                document.activeElement.tagName === 'TEXTAREA') {
+                return;
+            }
+            
             const speed = (keys['Shift'] ? 4 : 1.8) * timeScale;
             
-            const forward = new THREE.Vector3(
-                Math.sin(cameraRotation.y) * Math.cos(cameraRotation.x),
-                Math.sin(cameraRotation.x),
-                Math.cos(cameraRotation.y) * Math.cos(cameraRotation.x)
-            );
-            const right = new THREE.Vector3(
-                Math.cos(cameraRotation.y),
-                0,
-                -Math.sin(cameraRotation.y)
-            );
-
-            if (keys['w'] || keys['W'] || keys['ArrowUp']) cameraVelocity.add(forward.multiplyScalar(speed * 0.4));
-            if (keys['s'] || keys['S'] || keys['ArrowDown']) cameraVelocity.add(forward.multiplyScalar(-speed * 0.4));
-            if (keys['a'] || keys['A'] || keys['ArrowLeft']) cameraVelocity.add(right.multiplyScalar(-speed * 0.4));
-            if (keys['d'] || keys['D'] || keys['ArrowRight']) cameraVelocity.add(right.multiplyScalar(speed * 0.4));
-            if (keys['q'] || keys['Q']) cameraVelocity.y += speed * 0.4;
-            if (keys['e'] || keys['E']) cameraVelocity.y -= speed * 0.4;
-
-            cameraVelocity.multiplyScalar(0.93);
-            cameraPosition.add(cameraVelocity);
-
-            camera.position.copy(cameraPosition);
+            // Update camera rotation first
             camera.rotation.order = 'YXZ';
             camera.rotation.y = cameraRotation.y;
             camera.rotation.x = cameraRotation.x;
+            
+            // Get camera direction vectors from the camera's matrix
+            const forward = new THREE.Vector3();
+            const right = new THREE.Vector3();
+            const up = new THREE.Vector3(0, 1, 0);
+            
+            camera.getWorldDirection(forward);
+            right.crossVectors(forward, up).normalize();
+            
+            // Apply movement based on pressed keys
+            const moveVector = new THREE.Vector3();
+            
+            if (keys['w'] || keys['W'] || keys['ArrowUp']) {
+                moveVector.add(forward.clone().multiplyScalar(speed * 0.4));
+            }
+            if (keys['s'] || keys['S'] || keys['ArrowDown']) {
+                moveVector.add(forward.clone().multiplyScalar(-speed * 0.4));
+            }
+            if (keys['a'] || keys['A'] || keys['ArrowLeft']) {
+                moveVector.add(right.clone().multiplyScalar(-speed * 0.4));
+            }
+            if (keys['d'] || keys['D'] || keys['ArrowRight']) {
+                moveVector.add(right.clone().multiplyScalar(speed * 0.4));
+            }
+            if (keys['q'] || keys['Q']) {
+                moveVector.y += speed * 0.4;
+            }
+            if (keys['e'] || keys['E']) {
+                moveVector.y -= speed * 0.4;
+            }
+
+            // Apply smooth acceleration/deceleration
+            cameraVelocity.add(moveVector);
+            cameraVelocity.multiplyScalar(0.93);
+            
+            // Update position
+            cameraPosition.add(cameraVelocity);
+            camera.position.copy(cameraPosition);
         }
 
         function updateOrbits(delta) {
@@ -1131,9 +1548,17 @@
                 centralStar.glowMaterial.uniforms.time.value = time;
             }
             
+            // Update nebulae time
+            nebulae.forEach(nebula => {
+                if (nebula.material.uniforms && nebula.material.uniforms.time) {
+                    nebula.material.uniforms.time.value = time;
+                }
+            });
+            
             processAudio();
             handleCameraMovement();
             updateOrbits(delta);
+            updateAudioTimeline();
             
             renderer.render(scene, camera);
         }
@@ -1257,10 +1682,13 @@
             link.click();
         }
 
+        let uiVisible = true;
+        
         function toggleUI() {
+            uiVisible = !uiVisible;
             document.querySelectorAll('.ui-panel').forEach(panel => {
                 if (panel.id !== 'editor') {
-                    panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+                    panel.style.display = uiVisible ? 'block' : 'none';
                 }
             });
         }

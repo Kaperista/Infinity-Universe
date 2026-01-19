@@ -151,6 +151,7 @@
             width: 100%;
             margin: 12px 0;
             -webkit-appearance: none;
+            appearance: none;
             background: transparent;
             height: 6px;
         }
@@ -322,6 +323,7 @@
             background: linear-gradient(135deg, #6cf, #96f, #c6f, #6cf);
             background-size: 300% 300%;
             -webkit-background-clip: text;
+            background-clip: text;
             -webkit-text-fill-color: transparent;
             animation: gradientShift 4s ease infinite;
             letter-spacing: 4px;
@@ -492,7 +494,7 @@
         let keys = {};
         let ambientOscillators = [];
         let currentSystem = null;
-        let uiVisible = true;
+        uiVisible = false;
 
         const STAR_TYPES = {
             'O': {color: 0x9bb0ff, temp: 30000, size: 10, freq: [6000, 20000]},
@@ -1682,7 +1684,7 @@
             link.click();
         }
 
-        let uiVisible = true;
+        uiVisible = false;
         
         function toggleUI() {
             uiVisible = !uiVisible;
